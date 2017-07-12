@@ -1,0 +1,7 @@
+# adbtp/requirements/travis.txt
+#
+# Requirements for executing the test suite on Travis CI.
+
+-r tox.txt
+
+tox-travis==0.8

@@ -1,0 +1,7 @@
+# adbtp/requirements/tox.txt
+#
+# Requirements for executing the test suite using tox.
+
+-r test.txt
+
+tox==2.7.0
