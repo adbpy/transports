@@ -18,6 +18,10 @@ Bool = bool  # pylint: disable=invalid-name
 Buffer = typing.Union[bytes, bytearray]  # pylint: disable=invalid-name
 
 
+#: Type hint that represents a coroutine that yields :class:`~bytes` or :class:`~bytearray`.
+BufferGenerator = typing.Generator[typing.Any, None, Buffer]
+
+
 #: Type hint that is an alias for the built-in :class:`~bytes` type.
 Bytes = bytes  # pylint: disable=invalid-name
 
