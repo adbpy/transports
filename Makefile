@@ -55,7 +55,9 @@ pydocstyle:  ## Run pydocstyle on the package
 
 .PHONY: pylint
 pylint:  ## Run pylint on the package.
+ifneq (${TRAVIS_PYTHON_VERSION},nightly)
 	@pylint --rcfile .pylintrc adbtp
+endif
 
 .PHONY: lint
 lint:  pylint mypy isort  ## Run mypy, pylint, and isort on the package.
