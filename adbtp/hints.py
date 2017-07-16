@@ -36,7 +36,8 @@ EventLoop = asyncio.AbstractEventLoop
 
 #: Type hint that defines a collection of one or more exception types
 #: that can be caught/raised.
-ExceptionTypes = typing.Union[Exception, typing.Tuple[Exception, ...]]  # pylint: disable=invalid-name
+ExceptionType = typing.Type[Exception]
+ExceptionTypes = typing.Union[ExceptionType, typing.Tuple[ExceptionType, ...]]
 
 
 #: Type hint that is an alias for the built-in :class:`~int` type.
