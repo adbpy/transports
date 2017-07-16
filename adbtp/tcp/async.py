@@ -12,6 +12,9 @@ from .. import exceptions, hints, transport
 __all__ = ['Transport']
 
 
+# Disable incorrect warning on asyncio.wait_for, https://github.com/PyCQA/pylint/issues/996.
+# pylint: disable=not-an-iterable
+
 class Transport(transport.Transport):
     """
     Defines asynchronous (non-blocking) TCP transport using `asyncio`.
