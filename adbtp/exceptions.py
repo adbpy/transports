@@ -7,10 +7,13 @@
 import functools
 import typing
 
+#: Type hint that defines a exception type that derives from :class:`~Exception`.
+ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)  # pylint: disable=invalid-name
+
 #: Type hint that defines a collection of one or more exception types
 #: that can be caught/raised.
-ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)  # pylint: disable=invalid-name
-ExceptionTypes = typing.Union[ExceptionType, typing.Tuple[ExceptionType, ...]]  # pylint: disable=invalid-name
+ExceptionTypes = typing.Union[ExceptionType,  # pylint: disable=invalid-name
+                              typing.Tuple[ExceptionType, ...]]  # pylint: disable=invalid-sequence-index
 
 
 class TransportProtocolError(Exception):
