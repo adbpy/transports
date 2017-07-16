@@ -35,13 +35,13 @@ def reraise(exc_to_catch: hints.ExceptionTypes):
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`
     """
-    def decorator(func):
+    def decorator(func):  # pylint: disable=missing-docstring
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # pylint: disable=missing-docstring
             try:
                 return func(*args, **kwargs)
-            except exc_to_catch as e:
-                raise TransportProtocolError('Transport encountered an error') from e
+            except exc_to_catch as ex:
+                raise TransportProtocolError('Transport encountered an error') from ex
         return wrapper
     return decorator
 
@@ -53,13 +53,13 @@ def reraise_timeout_errors(exc_to_catch: hints.ExceptionTypes):
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`
     """
-    def decorator(func):
+    def decorator(func):  # pylint: disable=missing-docstring
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):  # pylint: disable=missing-docstring
             try:
                 return func(*args, **kwargs)
-            except exc_to_catch as e:
+            except exc_to_catch as ex:
                 raise TransportTimeoutError(
-                    'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from e
+                    'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from ex
         return wrapper
     return decorator
