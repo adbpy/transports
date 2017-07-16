@@ -111,8 +111,8 @@ class Transport(transport.Transport):
 
 @exceptions.reraise(OSError)
 @exceptions.reraise_timeout_errors(socket.timeout)
-def open(host: hints.Str, port: hints.Int,
-         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> Transport:  # pylint: # disable=redefined-builtin
+def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
+         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> Transport:
     """
     Open a new :class:`~adbtp.tcp.sync.Transport` transport to the given host/port.
 

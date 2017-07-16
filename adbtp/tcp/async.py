@@ -94,8 +94,9 @@ class Transport(transport.Transport):
 
 @asyncio.coroutine
 @exceptions.reraise(OSError)
-def open(host: hints.Str, port: hints.Int, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL,
-         loop: hints.EventLoop=None) -> Transport:  # pylint: # disable=redefined-builtin
+def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
+         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL,
+         loop: hints.EventLoop=None) -> Transport:
     """
     Open a new :class:`~adbtp.tcp.async.Transport` transport to the given host/port.
 
