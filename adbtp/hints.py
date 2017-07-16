@@ -35,12 +35,6 @@ Callable = typing.Callable
 EventLoop = asyncio.AbstractEventLoop
 
 
-#: Type hint that defines a collection of one or more exception types
-#: that can be caught/raised.
-ExceptionType = typing.Type[Exception]
-ExceptionTypes = typing.Union[ExceptionType, typing.Tuple[ExceptionType, ...]]
-
-
 #: Type hint that is an alias for the built-in :class:`~int` type.
 Int = int
 

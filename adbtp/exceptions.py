@@ -5,8 +5,12 @@
     Contains exception types used across the package.
 """
 import functools
+import typing
 
-from . import hints
+#: Type hint that defines a collection of one or more exception types
+#: that can be caught/raised.
+ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)  # pylint: disable=invalid-name
+ExceptionTypes = typing.Union[ExceptionType, typing.Tuple[ExceptionType, ...]]  # pylint: disable=invalid-name
 
 
 class TransportProtocolError(Exception):
@@ -27,7 +31,7 @@ class TransportClosedError(TransportProtocolError):
     """
 
 
-def reraise(exc_to_catch: hints.ExceptionTypes):
+def reraise(exc_to_catch: ExceptionTypes):
     """
     Decorator that catches specific exception types and re-raises them as
     :class:`~adbtp.exceptions.TransportProtocolError`.
@@ -46,7 +50,7 @@ def reraise(exc_to_catch: hints.ExceptionTypes):
     return decorator
 
 
-def reraise_timeout_errors(exc_to_catch: hints.ExceptionTypes):
+def reraise_timeout_errors(exc_to_catch: ExceptionTypes):
     """
     Decorator that catches transport specific timeout related exceptions to re-raise another.
 
