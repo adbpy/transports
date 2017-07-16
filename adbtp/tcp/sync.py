@@ -62,7 +62,8 @@ class Transport(transport.Transport):
 
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
-    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> hints.Buffer:
+    def read(self, num_bytes: hints.Int,
+             timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -80,7 +81,8 @@ class Transport(transport.Transport):
 
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
-    def write(self, data: hints.Buffer, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> None:
+    def write(self, data: hints.Buffer,
+              timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -94,7 +96,8 @@ class Transport(transport.Transport):
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
         with socket_timeout_scope(self._socket, transport_timeout(timeout)):
-            return self._socket.sendall(data)
+            self._socket.sendall(data)
+            return None
 
     @exceptions.reraise(OSError)
     def close(self) -> None:
@@ -112,7 +115,7 @@ class Transport(transport.Transport):
 @exceptions.reraise(OSError)
 @exceptions.reraise_timeout_errors(socket.timeout)
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
-         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> Transport:
+         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbtp.tcp.sync.Transport` transport to the given host/port.
 

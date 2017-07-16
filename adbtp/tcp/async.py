@@ -41,7 +41,8 @@ class Transport(transport.Transport):
     @asyncio.coroutine
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
-    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> hints.Buffer:
+    def read(self, num_bytes: hints.Int,
+             timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -62,7 +63,8 @@ class Transport(transport.Transport):
     @asyncio.coroutine
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
-    def write(self, data: hints.Buffer, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> None:
+    def write(self, data: hints.Buffer,
+              timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -77,6 +79,7 @@ class Transport(transport.Transport):
         """
         self._writer.write(data)
         yield from asyncio.wait_for(self._writer.drain(), timeout=transport_timeout(timeout), loop=self._loop)
+        return None
 
     @exceptions.reraise(OSError)
     def close(self) -> None:
@@ -96,7 +99,7 @@ class Transport(transport.Transport):
 @exceptions.reraise(OSError)
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
          timeout: hints.Timeout=transport.TIMEOUT_SENTINEL,
-         loop: hints.EventLoop=None) -> Transport:
+         loop: hints.EventLoop=None) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbtp.tcp.async.Transport` transport to the given host/port.
 

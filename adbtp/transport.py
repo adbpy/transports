@@ -5,6 +5,7 @@
     Defines abstract base class that all transports must implement.
 """
 import abc
+import typing
 
 from . import hints
 
@@ -37,6 +38,14 @@ def transport_timeout(value, sentinel=TIMEOUT_SENTINEL, default=None, seconds=Fa
     return value
 
 
+#: Type hint that represents a series of bytes generated from a synchronous or asynchronous transport.
+TransportReadResult = typing.Union[hints.Buffer, hints.BufferGenerator]  # pylint: disable=invalid-name
+
+
+#: Type hint that represents an empty result from a synchronous or asynchronous transport.
+TransportWriteResult = typing.Union[None, hints.NoneGenerator]  # pylint: disable=invalid-name
+
+
 class Transport(metaclass=abc.ABCMeta):
     """
     Abstract class that defines a communication transport.
@@ -62,7 +71,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> hints.Buffer:
+    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -77,7 +86,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def write(self, data: hints.Buffer, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> None:
+    def write(self, data: hints.Buffer, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -100,3 +109,8 @@ class Transport(metaclass=abc.ABCMeta):
         :rtype: `None`
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         """
+
+
+#: Type hint that represents a new instance created from a synchronous or asynchronous transport.
+# pylint: disable=invalid-name,unsubscriptable-object
+TransportOpenResult = typing.Union[Transport, typing.Generator[typing.Any, None, Transport]]

@@ -8,7 +8,7 @@ import asyncio
 import socket
 import typing
 
-# pylint: disable=invalid-name,no-member
+# pylint: disable=invalid-name,no-member,unsubscriptable-object
 
 #: Type hint that is an alias for the built-in :class:`~bool` type.
 Bool = bool
@@ -19,7 +19,7 @@ Bool = bool
 Buffer = typing.Union[bytes, bytearray]
 
 
-#: Type hint that represents a coroutine that yields :class:`~bytes` or :class:`~bytearray`.
+#: Type hint that represents a co-routine that yields :class:`~bytes` or :class:`~bytearray`.
 BufferGenerator = typing.Generator[typing.Any, None, Buffer]
 
 
@@ -37,6 +37,10 @@ EventLoop = asyncio.AbstractEventLoop
 
 #: Type hint that is an alias for the built-in :class:`~int` type.
 Int = int
+
+
+#: Type hint that represents a co-routine that yields :class:`~NoneType`.
+NoneGenerator = typing.Generator[typing.Any, None, None]
 
 
 #: Type hint that is an alias for :class:`~socket.socket`.
