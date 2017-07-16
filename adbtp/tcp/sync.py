@@ -58,7 +58,7 @@ class Transport(transport.Transport):
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._socket is None or self._socket._closed
+        return self._socket is None or self._socket._closed  # pylint: disable=protected-access
 
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
