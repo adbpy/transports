@@ -90,8 +90,8 @@ class Transport(transport.Transport):
         :type data: :class:`~bytes` or :class:`~bytearray`
         :param timeout: Maximum number of milliseconds to write before raising an exception.
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
-        :return Number of bytes written
-        :return: :class:`~int`
+        :return Nothing
+        :rtype: :class:`~NoneType`
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """

@@ -95,7 +95,7 @@ class Transport(metaclass=abc.ABCMeta):
         :param timeout: Maximum number of milliseconds to write before raising an exception
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
-        :return: `None`
+        :rtype: :class:`~NoneType`
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
@@ -106,7 +106,7 @@ class Transport(metaclass=abc.ABCMeta):
         Close the transport.
 
         :return: Nothing
-        :rtype: `None`
+        :rtype: :class:`~NoneType`
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         """
 
