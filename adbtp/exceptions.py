@@ -34,6 +34,18 @@ class TransportClosedError(TransportProtocolError):
     """
 
 
+class TransportEndpointNotFound(TransportProtocolError):
+    """
+    Exception raised when the transport endpoint (peer) cannot be found or was disconnected.
+    """
+
+
+class TransportAccessDenied(TransportProtocolError):
+    """
+    Exception raised when caller has insufficient permissions to perform an action.
+    """
+
+
 def reraise(exc_to_catch: ExceptionTypes):
     """
     Decorator that catches specific exception types and re-raises them as
