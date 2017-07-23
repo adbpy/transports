@@ -62,3 +62,11 @@ StreamWriter = asyncio.StreamWriter
 #: Type hint that defines an optional integer value that represents
 #: a timeout value to a transport.
 Timeout = typing.Optional[int]
+
+
+#: Type hint that represents an optional :class:`~hints.Int`.
+OptionalInt = typing.Optional[Int]
+
+
+#: Type hint that represents an optional :class:`~hints.Str`.
+OptionalStr = typing.Optional[Str]
