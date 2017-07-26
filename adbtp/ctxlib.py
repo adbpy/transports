@@ -20,4 +20,3 @@ def close_on_error(obj):
     except Exception:
         obj.close()
         raise
-
