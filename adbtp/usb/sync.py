@@ -29,6 +29,16 @@ class Transport(transport.Transport):
         self._read_endpoint = read_endpoint
         self._write_endpoint = write_endpoint
 
+    def __repr__(self):
+        return '<{}({}, state={!r})>'.format(self.__class__.__name__, str(self),
+                                             'closed' if self.closed else 'open')
+
+    def __str__(self):
+        serial = 'serial={!r}'.format(self._serial or '*')
+        vid = 'vid={!r}'.format(self._vid or '*')
+        pid = 'pid={!r}'.format(self._pid or '*')
+        return ', '.join((serial, vid, pid))
+
     @property
     def closed(self):
         """
