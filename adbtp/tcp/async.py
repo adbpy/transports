@@ -28,6 +28,13 @@ class Transport(transport.Transport):
         self._writer = writer
         self._loop = loop
 
+    def __repr__(self):
+        return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, str(self),
+                                                       'closed' if self.closed else 'open')
+
+    def __str__(self):
+        return '{}:{}'.format(self._host, self._port)
+
     @property
     def closed(self):
         """
