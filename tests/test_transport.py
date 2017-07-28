@@ -35,20 +35,6 @@ def sentinel(request):
     return request.param
 
 
-@pytest.fixture(scope='session', params=[
-    500,
-    1000,
-    2000,
-    5000,
-    10000
-])
-def valid_timeout_ms(request):
-    """
-    Fixture that yields valid timeout values in milliseconds.
-    """
-    return request.param
-
-
 def test_transport_timeout_returns_default_on_sentinel(sentinel, default):
     """
     Assert that :func:`~adbtp.transport.transport_timeout` returns the default value when given
