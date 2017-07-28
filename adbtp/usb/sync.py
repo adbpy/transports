@@ -102,8 +102,8 @@ class Transport(transport.Transport):
 
 
 @libusb.reraise_libusb_errors
-def open(serial: libusb.SerialNumber, vid: libusb.VendorId,  # pylint: disable=redefined-builtin
-         pid: libusb.ProductId) -> transport.TransportOpenResult:
+def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pylint: disable=redefined-builtin
+         pid: libusb.ProductId = None) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbtp.usb.sync.Transport` transport to a USB device.
 
