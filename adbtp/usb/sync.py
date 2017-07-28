@@ -113,7 +113,8 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
     :type vid: :class:`~int` or :class:`~NoneType`
     :param vid: Optional product id filter
     :type pid: :class:`~int` or :class:`~NoneType`
-    :return:
+    :return: Synchronous USB transport
+    :rtype: :class:`~adbtp.usb.sync.Transport`
     """
     # Create a new context for accessing a USB device. Libusb uses a context structure to represent
     # individual user sessions and prevent interference between then when using a device concurrently.
