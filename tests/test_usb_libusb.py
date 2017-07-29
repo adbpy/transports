@@ -123,6 +123,24 @@ def mock_write_handle_incorrect_return_value(mocker, mock_handle):
 
 
 @pytest.fixture(scope='function')
+def mock_handle_active_kernel_driver(mocker, mock_handle):
+    """
+    Fixture that yields a mock USB device handle that has an active kernel driver.
+    """
+    mock_handle.kernelDriverActive = mocker.MagicMock(return_value=True)
+    return mock_handle
+
+
+@pytest.fixture(scope='function')
+def mock_handle_inactive_kernel_driver(mocker, mock_handle):
+    """
+    Fixture that yields a mock USB device handle that has an inactive kernel driver.
+    """
+    mock_handle.kernelDriverActive = mocker.MagicMock(return_value=False)
+    return mock_handle
+
+
+@pytest.fixture(scope='function')
 def mock_endpoint(mocker, valid_endpoint_address):
     """
     Fixture that yields a mock USB endpoint.
@@ -250,3 +268,32 @@ def test_open_device_handle_calls_open_on_device(mock_device):
     """
     libusb.open_device_handle(mock_device)
     mock_device.open.assert_called_with()
+
+
+def test_claim_interface_claims_interface_settings_number(mock_handle, mock_interface_settings,
+                                                          valid_interface_number):
+    """
+    Assert that :func:`~adbtp.usb.libusb.claim_interface` claims the interface number of
+    the given interface settings.
+    """
+    libusb.claim_interface(mock_handle, mock_interface_settings)
+    mock_handle.claimInterface.assert_called_with(valid_interface_number)
+
+
+def test_claim_interface_detaches_kernel_driver_when_active(mock_handle_active_kernel_driver, mock_interface_settings,
+                                                            valid_interface_number):
+    """
+    Assert that :func:`~adbtp.usb.libusb.claim_interface` detaches the kernel driver if it is active.
+    """
+    libusb.claim_interface(mock_handle_active_kernel_driver, mock_interface_settings)
+    mock_handle_active_kernel_driver.detachKernelDriver.assert_called_with(valid_interface_number)
+
+
+def test_claim_interface_does_not_detach_kernel_driver_when_inactive(mock_handle_inactive_kernel_driver,
+                                                                     mock_interface_settings, valid_interface_number):
+    """
+    Assert that :func:`~adbtp.usb.libusb.claim_interface` does not try and detach the kernel driver
+    if it is inactive.
+    """
+    libusb.claim_interface(mock_handle_inactive_kernel_driver, mock_interface_settings)
+    assert not mock_handle_inactive_kernel_driver.detachKernelDriver.called
