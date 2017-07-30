@@ -194,7 +194,7 @@ def mock_context_class(mocker, mock_context):
     :class:`~usb1.USBContext` and :meth:`~usb1.USBContext.open`.
     """
     mocker.patch.object(usb1, 'USBContext', side_effect=lambda: mock_context)
-    mock_context.open = mocker.MagicMock(return_value=mock_context)
+    mock_context.open.return_value = mock_context
     return mock_context
 
 
@@ -207,36 +207,36 @@ def mock_device(mocker):
 
 
 @pytest.fixture(scope='function')
-def mock_device_with_serial_factory(mocker, mock_device):
+def mock_device_with_serial_factory(mock_device):
     """
     Fixture that yields a function used to create mock USB devices with a specific serial number.
     """
     def factory(serial):
-        mock_device.getSerialNumber = mocker.MagicMock(return_value=serial)
+        mock_device.getSerialNumber.return_value = serial
         return mock_device
 
     return factory
 
 
 @pytest.fixture(scope='function')
-def mock_device_with_vid_factory(mocker, mock_device):
+def mock_device_with_vid_factory(mock_device):
     """
     Fixture that yields a function used to create mock USB devices with a specific vendor id.
     """
     def factory(vendor_id):
-        mock_device.getVendorID = mocker.MagicMock(return_value=vendor_id)
+        mock_device.getVendorID.return_value = vendor_id
         return mock_device
 
     return factory
 
 
 @pytest.fixture(scope='function')
-def mock_device_with_pid_factory(mocker, mock_device):
+def mock_device_with_pid_factory(mock_device):
     """
     Fixture that yields a function used to create mock USB devices with a specific product id.
     """
     def factory(product_id):
-        mock_device.getProductID = mocker.MagicMock(return_value=product_id)
+        mock_device.getProductID.return_value = product_id
         return mock_device
 
     return factory
@@ -251,48 +251,48 @@ def mock_handle(mocker):
 
 
 @pytest.fixture(scope='function')
-def mock_read_handle(mocker, mock_handle):
+def mock_read_handle(mock_handle):
     """
     Fixture that yields a mock USB device handle used for reading.
     """
-    mock_handle.bulkRead = mocker.MagicMock(return_value=None)
+    mock_handle.bulkRead.return_value = None
     return mock_handle
 
 
 @pytest.fixture(scope='function')
-def mock_write_handle(mocker, mock_handle):
+def mock_write_handle(mock_handle):
     """
     Fixture that yields a mock USB device handle used for writing.
     """
-    mock_handle.bulkWrite = mocker.MagicMock(side_effect=lambda *args: len(args[1]))
+    mock_handle.bulkWrite.side_effect = lambda *args: len(args[1])
     return mock_handle
 
 
 @pytest.fixture(scope='function')
-def mock_write_handle_incorrect_return_value(mocker, mock_handle):
+def mock_write_handle_incorrect_return_value(mock_handle):
     """
     Fixture that yields a mock USB device handle used for writing that yields back and incorrect
     number of bytes written.
     """
-    mock_handle.bulkWrite = mocker.MagicMock(side_effect=lambda *args: len(args[1]) - 1)
+    mock_handle.bulkWrite.side_effect = lambda *args: len(args[1]) - 1
     return mock_handle
 
 
 @pytest.fixture(scope='function')
-def mock_handle_active_kernel_driver(mocker, mock_handle):
+def mock_handle_active_kernel_driver(mock_handle):
     """
     Fixture that yields a mock USB device handle that has an active kernel driver.
     """
-    mock_handle.kernelDriverActive = mocker.MagicMock(return_value=True)
+    mock_handle.kernelDriverActive.return_value = True
     return mock_handle
 
 
 @pytest.fixture(scope='function')
-def mock_handle_inactive_kernel_driver(mocker, mock_handle):
+def mock_handle_inactive_kernel_driver(mock_handle):
     """
     Fixture that yields a mock USB device handle that has an inactive kernel driver.
     """
-    mock_handle.kernelDriverActive = mocker.MagicMock(return_value=False)
+    mock_handle.kernelDriverActive.return_value = False
     return mock_handle
 
 
@@ -302,7 +302,7 @@ def mock_endpoint(mocker, valid_endpoint_address):
     Fixture that yields a mock USB endpoint.
     """
     mock = mocker.MagicMock(usb1.USBEndpoint, autospec=True)
-    mock.getAddress = mocker.MagicMock(return_value=valid_endpoint_address)
+    mock.getAddress.return_value = valid_endpoint_address
     return mock
 
 
@@ -312,46 +312,46 @@ def mock_interface_settings(mocker, valid_interface_number):
     Fixture that yields mock USB interface settings.
     """
     mock = mocker.MagicMock(usb1.USBInterfaceSetting, autospec=True)
-    mock.getNumber = mocker.MagicMock(return_value=valid_interface_number)
+    mock.getNumber.return_value = valid_interface_number
     return mock
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_match(mocker, mock_interface_settings, valid_usb_device_class,
+def mock_interface_settings_match(mock_interface_settings, valid_usb_device_class,
                                   valid_usb_device_subclass, valid_usb_device_protocol):
     """
     Fixture that yields mock USB interface settings that is the correct USB class, subclass, and protocol.
     """
-    mock_interface_settings.getClass = mocker.MagicMock(return_value=valid_usb_device_class)
-    mock_interface_settings.getSubClass = mocker.MagicMock(return_value=valid_usb_device_subclass)
-    mock_interface_settings.getProtocol = mocker.MagicMock(return_value=valid_usb_device_protocol)
+    mock_interface_settings.getClass.return_value = valid_usb_device_class
+    mock_interface_settings.getSubClass.return_value = valid_usb_device_subclass
+    mock_interface_settings.getProtocol.return_value = valid_usb_device_protocol
     return mock_interface_settings
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_mismatch_class(mocker, mock_interface_settings, invalid_usb_device_class):
+def mock_interface_settings_mismatch_class(mock_interface_settings, invalid_usb_device_class):
     """
     Fixture that yields mock USB interface settings that is an unsupported device class.
     """
-    mock_interface_settings.getClass = mocker.MagicMock(return_value=invalid_usb_device_class)
+    mock_interface_settings.getClass.return_value = invalid_usb_device_class
     return mock_interface_settings
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_mismatch_subclass(mocker, mock_interface_settings, invalid_usb_device_subclass):
+def mock_interface_settings_mismatch_subclass(mock_interface_settings, invalid_usb_device_subclass):
     """
     Fixture that yields mock USB interface settings that is an unsupported device subclass.
     """
-    mock_interface_settings.getSubClass = mocker.MagicMock(return_value=invalid_usb_device_subclass)
+    mock_interface_settings.getSubClass.return_value = invalid_usb_device_subclass
     return mock_interface_settings
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_mismatch_protocol(mocker, mock_interface_settings, invalid_usb_device_protocol):
+def mock_interface_settings_mismatch_protocol(mock_interface_settings, invalid_usb_device_protocol):
     """
     Fixture that yields mock USB interface settings that is an unsupported device protocol.
     """
-    mock_interface_settings.getProtocol = mocker.MagicMock(return_value=invalid_usb_device_protocol)
+    mock_interface_settings.getProtocol.return_value = invalid_usb_device_protocol
     return mock_interface_settings
 
 
