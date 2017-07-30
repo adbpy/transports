@@ -61,6 +61,124 @@ def valid_interface_number(request):
     return request.param
 
 
+@pytest.fixture(scope='session')
+def valid_usb_device_class():
+    """
+    Fixture that yields a valid USB device class.
+    """
+    return libusb.USB_DEVICE_CLASS
+
+
+@pytest.fixture(scope='session', params=[
+    0x00,
+    0x01,
+    0x02,
+    0x03,
+    0x05,
+    0x06,
+    0x07,
+    0x08,
+    0x09,
+    0xA,
+    0xB,
+    0xD,
+    0xE,
+    0xF,
+    0x10,
+    0x11,
+    0x12,
+    0xDC,
+    0xE0,
+    0xEF,
+    0xFE,
+])
+def invalid_usb_device_class(request):
+    """
+    Fixture that yields a invalid USB device class.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session')
+def valid_usb_device_subclass():
+    """
+    Fixture that yields a valid USB device subclass.
+    """
+    return libusb.USB_DEVICE_SUBCLASS
+
+
+@pytest.fixture(scope='session', params=[
+    0x00,
+    0x01,
+    0x10,
+    0xAB,
+    0x33
+])
+def invalid_usb_device_subclass(request):
+    """
+    Fixture that yields a invalid USB device subclass.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session')
+def valid_usb_device_protocol():
+    """
+    Fixture that yields a valid USB device protocol.
+    """
+    return libusb.USB_DEVICE_PROTOCOL
+
+
+@pytest.fixture(scope='session', params=[
+    0x00,
+    0x01,
+    0x10,
+    0xAB,
+    0x33
+])
+def invalid_usb_device_protocol(request):
+    """
+    Fixture that yields a invalid USB device protocol.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session', params=[
+    '0123456789ABCDEF'
+])
+def valid_serial_number(request):
+    """
+    Fixture that yields valid USB device serial numbers.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session', params=[
+    0x18d1,
+    0x2109,
+    0x04b4,
+    0x1b1c
+])
+def valid_vendor_id(request):
+    """
+    Fixture that yields valid USB device vendor id.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session', params=[
+    0x4ee2,
+    0x0101,
+    0x2812,
+    0x1b1e
+])
+def valid_product_id(request):
+    """
+    Fixture that yields valid USB device product id.
+    """
+    return request.param
+
+
 @pytest.fixture(scope='function')
 def mock_context(mocker):
     """
@@ -84,6 +202,42 @@ def mock_device(mocker):
     Fixture that yields a mock USB device.
     """
     return mocker.MagicMock(usb1.USBDevice, autospec=True)
+
+
+@pytest.fixture(scope='function')
+def mock_device_with_serial_factory(mocker, mock_device):
+    """
+    Fixture that yields a function used to create mock USB devices with a specific serial number.
+    """
+    def factory(serial):
+        mock_device.getSerialNumber = mocker.MagicMock(return_value=serial)
+        return mock_device
+
+    return factory
+
+
+@pytest.fixture(scope='function')
+def mock_device_with_vid_factory(mocker, mock_device):
+    """
+    Fixture that yields a function used to create mock USB devices with a specific vendor id.
+    """
+    def factory(vendor_id):
+        mock_device.getVendorID = mocker.MagicMock(return_value=vendor_id)
+        return mock_device
+
+    return factory
+
+
+@pytest.fixture(scope='function')
+def mock_device_with_pid_factory(mocker, mock_device):
+    """
+    Fixture that yields a function used to create mock USB devices with a specific product id.
+    """
+    def factory(product_id):
+        mock_device.getProductID = mocker.MagicMock(return_value=product_id)
+        return mock_device
+
+    return factory
 
 
 @pytest.fixture(scope='function')
@@ -158,6 +312,45 @@ def mock_interface_settings(mocker, valid_interface_number):
     mock = mocker.MagicMock(usb1.USBInterfaceSetting, autospec=True)
     mock.getNumber = mocker.MagicMock(return_value=valid_interface_number)
     return mock
+
+
+@pytest.fixture(scope='function')
+def mock_interface_settings_match(mocker, mock_interface_settings, valid_usb_device_class,
+                                  valid_usb_device_subclass, valid_usb_device_protocol):
+    """
+    Fixture that yields mock USB interface settings that is the correct USB class, subclass, and protocol.
+    """
+    mock_interface_settings.getClass = mocker.MagicMock(return_value=valid_usb_device_class)
+    mock_interface_settings.getSubClass = mocker.MagicMock(return_value=valid_usb_device_subclass)
+    mock_interface_settings.getProtocol = mocker.MagicMock(return_value=valid_usb_device_protocol)
+    return mock_interface_settings
+
+
+@pytest.fixture(scope='function')
+def mock_interface_settings_mismatch_class(mocker, mock_interface_settings, invalid_usb_device_class):
+    """
+    Fixture that yields mock USB interface settings that is an unsupported device class.
+    """
+    mock_interface_settings.getClass = mocker.MagicMock(return_value=invalid_usb_device_class)
+    return mock_interface_settings
+
+
+@pytest.fixture(scope='function')
+def mock_interface_settings_mismatch_subclass(mocker, mock_interface_settings, invalid_usb_device_subclass):
+    """
+    Fixture that yields mock USB interface settings that is an unsupported device subclass.
+    """
+    mock_interface_settings.getSubClass = mocker.MagicMock(return_value=invalid_usb_device_subclass)
+    return mock_interface_settings
+
+
+@pytest.fixture(scope='function')
+def mock_interface_settings_mismatch_protocol(mocker, mock_interface_settings, invalid_usb_device_protocol):
+    """
+    Fixture that yields mock USB interface settings that is an unsupported device protocol.
+    """
+    mock_interface_settings.getProtocol = mocker.MagicMock(return_value=invalid_usb_device_protocol)
+    return mock_interface_settings
 
 
 def test_reraise_libusb_errors_handles_no_device(error_code_to_exception):
@@ -297,3 +490,65 @@ def test_claim_interface_does_not_detach_kernel_driver_when_inactive(mock_handle
     """
     libusb.claim_interface(mock_handle_inactive_kernel_driver, mock_interface_settings)
     assert not mock_handle_inactive_kernel_driver.detachKernelDriver.called
+
+
+def test_device_matches_with_no_filter_on_class_subclass_and_protocol(mock_device, mock_interface_settings_match):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will match USB devices based on
+    class, subclass, and protocol when no serial/vid/pid filter is given.
+    """
+    assert libusb.device_matches(mock_device, mock_interface_settings_match)
+
+
+def test_device_mismatches_on_invalid_usb_class(mock_device, mock_interface_settings_mismatch_class):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will not match USB devices that
+    use an invalid device class.
+    """
+    assert not libusb.device_matches(mock_device, mock_interface_settings_mismatch_class)
+
+
+def test_device_mismatches_on_invalid_usb_subclass(mock_device, mock_interface_settings_mismatch_subclass):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will not match USB devices that
+    use an invalid device subclass.
+    """
+    assert not libusb.device_matches(mock_device, mock_interface_settings_mismatch_subclass)
+
+
+def test_device_mismatches_on_invalid_usb_protocol(mock_device, mock_interface_settings_mismatch_protocol):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will not match USB devices that
+    use an invalid device protocol.
+    """
+    assert not libusb.device_matches(mock_device, mock_interface_settings_mismatch_protocol)
+
+
+def test_device_matches_on_settings_and_serial(mock_device_with_serial_factory, mock_interface_settings_match,
+                                               valid_serial_number):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will match a device based on correct interface
+    settings and serial number.
+    """
+    device = mock_device_with_serial_factory(valid_serial_number)
+    assert libusb.device_matches(device, mock_interface_settings_match)
+
+
+def test_device_matches_on_settings_and_vendor_id(mock_device_with_vid_factory, mock_interface_settings_match,
+                                                  valid_vendor_id):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will match a device based on correct interface
+    settings and vendor id.
+    """
+    device = mock_device_with_vid_factory(valid_vendor_id)
+    assert libusb.device_matches(device, mock_interface_settings_match)
+
+
+def test_device_matches_on_settings_and_product_id(mock_device_with_pid_factory, mock_interface_settings_match,
+                                                   valid_product_id):
+    """
+    Assert that :func:`~adbtp.usb.libusb.device_matches` will match a device based on correct interface
+    settings and product id.
+    """
+    device = mock_device_with_pid_factory(valid_product_id)
+    assert libusb.device_matches(device, mock_interface_settings_match)
