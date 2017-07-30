@@ -190,10 +190,12 @@ def mock_context(mocker):
 @pytest.fixture(scope='function')
 def mock_context_class(mocker, mock_context):
     """
-    Fixture that yields nothing but patches :class:`~usb1.USBContext` to
-    return a mocked context object on instantiation.
+    Fixture that yields a mock USB context object that is patched to be returned by
+    :class:`~usb1.USBContext` and :meth:`~usb1.USBContext.open`.
     """
     mocker.patch.object(usb1, 'USBContext', side_effect=lambda: mock_context)
+    mock_context.open = mocker.MagicMock(return_value=mock_context)
+    return mock_context
 
 
 @pytest.fixture(scope='function')
@@ -445,13 +447,13 @@ def test_close_closes_context(mock_context, mock_handle, mock_interface_settings
     mock_context.close.assert_called_with()
 
 
-def test_open_context_returns_new_context(mock_context_class, mock_context):
+def test_open_context_returns_new_context(mock_context_class):
     """
     Assert that :func:`~adbtp.usb.libusb.open_context` returns a new :class:`~usb1.USBContext` instance
     by calling :meth:`~usb1.USBContext.open`.
     """
     libusb.open_context()
-    mock_context.open.assert_called_with()
+    mock_context_class.open.assert_called_with()
 
 
 def test_open_device_handle_calls_open_on_device(mock_device):
@@ -552,3 +554,42 @@ def test_device_matches_on_settings_and_product_id(mock_device_with_pid_factory,
     """
     device = mock_device_with_pid_factory(valid_product_id)
     assert libusb.device_matches(device, mock_interface_settings_match)
+
+
+def test_optional_usb_context_yields_context_when_given(mock_context):
+    """
+    Assert that :func:`~adbtp.usb.libusb.optional_usb_context` yields back the USB context instance
+    if one was given.
+    """
+    with libusb.optional_usb_context(mock_context) as ctx:
+        assert ctx is mock_context
+
+
+def test_optional_usb_context_doesnt_close_context_when_given(mock_context):
+    """
+    Assert that :func:`~adbtp.usb.libusb.optional_usb_context` does not close the USB context
+    if one was given.
+    """
+    with libusb.optional_usb_context(mock_context):
+        pass
+    assert not mock_context.close.called
+
+
+def test_optional_usb_context_creates_new_one_when_not_given(mock_context_class):
+    """
+    Assert that :func:`~adbtp.usb.libusb.optional_usb_context` creates a new USB context instance
+    if one was not given.
+    """
+    with libusb.optional_usb_context():
+        pass
+    assert usb1.USBContext.called
+
+
+def test_optional_usb_context_closes_context_when_not_given(mock_context_class):
+    """
+    Assert that :func:`~adbtp.usb.libusb.optional_usb_context` closes the USB context it
+    creates if one was not given.
+    """
+    with libusb.optional_usb_context():
+        pass
+    mock_context_class.close.assert_called_with()
