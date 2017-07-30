@@ -210,8 +210,8 @@ def claim_interface(handle, interface_settings):
     handle.claimInterface(interface)
 
 
-def find_device(serial: SerialNumber, vid: VendorId, pid: ProductId,
-                context: OptionalContext = None, skip_on_error: hints.Bool = True) -> Device:
+def find_device(serial: SerialNumber=None, vid: VendorId=None, pid: ProductId=None,
+                context: OptionalContext=None, skip_on_error: hints.Bool=True) -> Device:
     """
     Find a local USB device.
 
@@ -231,8 +231,8 @@ def find_device(serial: SerialNumber, vid: VendorId, pid: ProductId,
     return next(find_devices_generator(serial, vid, pid, context, skip_on_error), (None, None))
 
 
-def find_devices_generator(serial: SerialNumber, vid: VendorId, pid: ProductId,
-                           context: OptionalContext = None, skip_on_error: hints.Bool = True) -> DeviceList:
+def find_devices_generator(serial: SerialNumber=None, vid: VendorId=None, pid: ProductId=None,
+                           context: OptionalContext=None, skip_on_error: hints.Bool=True) -> DeviceList:
     """
     Generator function that yields local USB devices.
 
@@ -254,8 +254,8 @@ def find_devices_generator(serial: SerialNumber, vid: VendorId, pid: ProductId,
                 if device_matches(device, settings, serial, vid, pid))
 
 
-def find_devices_interfaces_generator(context: OptionalContext = None,
-                                      skip_on_error: hints.Bool = True) -> DeviceList:
+def find_devices_interfaces_generator(context: OptionalContext=None,
+                                      skip_on_error: hints.Bool=True) -> DeviceList:
     """
     Generator function that yields combinations of all USB devices with settings
     for all of their interfaces.
@@ -274,7 +274,7 @@ def find_devices_interfaces_generator(context: OptionalContext = None,
 
 
 def device_matches(device: Device, settings: InterfaceSettings,
-                   serial: SerialNumber, vid: VendorId, pid: ProductId) -> hints.Bool:
+                   serial: SerialNumber=None, vid: VendorId=None, pid: ProductId=None) -> hints.Bool:
     """
     Check if given device and interface settings matches filter.
 
@@ -301,7 +301,7 @@ def device_matches(device: Device, settings: InterfaceSettings,
 
 
 @contextlib.contextmanager
-def optional_usb_context(context: OptionalContext = None) -> typing.Callable:
+def optional_usb_context(context: OptionalContext=None) -> typing.Callable:
     """
     Context manager that uses or creates a USB context for the duration of the block.
 
