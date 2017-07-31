@@ -19,7 +19,7 @@ def test_close_on_error_closes_on_exception():
     with pytest.raises(RuntimeError):
         with ctxlib.close_on_error(obj):
             raise RuntimeError()
-        assert obj.closed
+    assert obj.closed
 
 
 def test_close_on_error_does_not_close_without_exception():
