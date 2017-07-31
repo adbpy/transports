@@ -123,7 +123,7 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
         # was provided, this will yield back the first device that matches the USB class/subclass/protocol
         # supported by ADB.
         device, interface_settings = libusb.find_device(serial, vid, pid, context)
-        if not device or not interface_settings:
+        if device is None or interface_settings is None:
             raise exceptions.TransportEndpointNotFound(
                 'Cannot find USB device for serial={} vid={} pid={}'.format(serial, vid, pid))
 
