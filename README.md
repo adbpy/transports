@@ -32,7 +32,7 @@ A standalone library that can be used for providing multiple communication trans
 The transport protocol should care about:
 
 * Synchronous vs. Asynchronous constructs
-* Network transports such as TCP, UDP, and USB
+* Communications transports such as TCP, UDP, and USB
 
 The transport protocol should not care about:
 
