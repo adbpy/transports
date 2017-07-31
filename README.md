@@ -13,6 +13,19 @@ Android Debug Bridge (ADB) Transport Protocol
 
 This project is actively maintained and under development.
 
+## Installation
+
+To install transport-protocol from [pip](https://pypi.python.org/pypi/pip):
+```bash
+    $ pip install adbtp
+```
+
+To install transport-protocol from source:
+```bash
+    $ git clone git@github.com:adbpy/transport-protocol.git
+    $ cd transport-protocol && python setup.py install
+```
+
 ## Goals/Scope
 
 A standalone library that can be used for providing multiple communication transports within the context of ADB.
