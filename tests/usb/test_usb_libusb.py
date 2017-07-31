@@ -42,7 +42,33 @@ def error_code_to_exception(request):
 ])
 def valid_endpoint_address(request):
     """
-    Fixture that yields valid timeout values in milliseconds.
+    Fixture that yields valid USB endpoint addresses.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session', params=[
+    128,
+    129,
+    212,
+    255,
+])
+def valid_read_endpoint_address(request):
+    """
+    Fixture that yields valid USB endpoint addresses using for reading.
+    """
+    return request.param
+
+
+@pytest.fixture(scope='session', params=[
+    1,
+    2,
+    98,
+    124,
+])
+def valid_write_endpoint_address(request):
+    """
+    Fixture that yields valid USB endpoint addresses using for writing.
     """
     return request.param
 
@@ -416,6 +442,20 @@ def mock_interface_settings_mismatch_protocol(mock_interface_settings, invalid_u
     return mock_interface_settings
 
 
+@pytest.fixture(scope='function')
+def mock_interface_settings_endpoint_factory(mocker, mock_interface_settings, mock_endpoint):
+    """
+    Fixture that yields a factory function used to create a USB interface settings object
+    for a given endpoint address.
+    """
+    def factory(address):
+        mock_endpoint.getAddress.return_value = address
+        mock_interface_settings.iterEndpoints.return_value = [mock_endpoint]
+        return mock_interface_settings
+
+    return factory
+
+
 def test_reraise_libusb_errors_handles_no_device(error_code_to_exception):
     """
     Assert that functions decorated with :func:`~adbtp.usb.libusb.reraise_libusb_errors` raise
@@ -697,3 +737,49 @@ def test_optional_usb_context_closes_context_when_not_given(mock_context_class):
     with libusb.optional_usb_context():
         pass
     mock_context_class.close.assert_called_with()
+
+
+def test_find_read_endpoint_returns_read_endpoint_on_match(mock_interface_settings_endpoint_factory,
+                                                           valid_read_endpoint_address):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_read_endpoint` returns a matching endpoint object when
+    one that supports reading is available.
+    """
+    settings = mock_interface_settings_endpoint_factory(valid_read_endpoint_address)
+    endpoint = libusb.find_read_endpoint(settings)
+    assert endpoint is not None
+    assert endpoint.getAddress() == valid_read_endpoint_address
+
+
+def test_find_read_endpoint_returns_none_on_mismatch(mock_interface_settings_endpoint_factory,
+                                                     valid_write_endpoint_address):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_read_endpoint` returns None when no read
+    endpoints are available.
+    """
+    settings = mock_interface_settings_endpoint_factory(valid_write_endpoint_address)
+    endpoint = libusb.find_read_endpoint(settings)
+    assert not endpoint
+
+
+def test_find_write_endpoint_returns_read_endpoint_on_match(mock_interface_settings_endpoint_factory,
+                                                           valid_write_endpoint_address):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_write_endpoint` returns a matching endpoint object when
+    one that supports writing is available.
+    """
+    settings = mock_interface_settings_endpoint_factory(valid_write_endpoint_address)
+    endpoint = libusb.find_write_endpoint(settings)
+    assert endpoint is not None
+    assert endpoint.getAddress() == valid_write_endpoint_address
+
+
+def test_find_write_endpoint_returns_none_on_mismatch(mock_interface_settings_endpoint_factory,
+                                                     valid_read_endpoint_address):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_write_endpoint` returns None when no write
+    endpoints are available.
+    """
+    settings = mock_interface_settings_endpoint_factory(valid_read_endpoint_address)
+    endpoint = libusb.find_write_endpoint(settings)
+    assert not endpoint
