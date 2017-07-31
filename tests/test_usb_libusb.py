@@ -199,6 +199,67 @@ def mock_context_class(mocker, mock_context):
 
 
 @pytest.fixture(scope='function')
+def mock_context_one_device_match(mock_context, mock_device, mock_interface_settings_match):
+    """
+    Fixture that yields a mock USB context that yields one device that matches based
+    on class, subclass, and protocol.
+    """
+    mock_device.iterSettings.return_value = [mock_interface_settings_match]
+    mock_context.getDeviceList.return_value = [mock_device]
+    return mock_context
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_match_serial(mock_context, mock_device_with_serial_factory, mock_interface_settings_match,
+                                         valid_serial_number):
+    """
+    Fixture that yields a mock USB context that yields one device that matches based
+    on serial number, class, subclass, and protocol.
+    """
+    device = mock_device_with_serial_factory(valid_serial_number)
+    device.iterSettings.return_value = [mock_interface_settings_match]
+    mock_context.getDeviceList.return_value = [device]
+    return mock_context
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_match_vid(mock_context, mock_device_with_vid_factory, mock_interface_settings_match,
+                                      valid_vendor_id):
+    """
+    Fixture that yields a mock USB context that yields one device that matches based
+    on vendor id, class, subclass, and protocol.
+    """
+    device = mock_device_with_vid_factory(valid_vendor_id)
+    device.iterSettings.return_value = [mock_interface_settings_match]
+    mock_context.getDeviceList.return_value = [device]
+    return mock_context
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_match_pid(mock_context, mock_device_with_pid_factory, mock_interface_settings_match,
+                                      valid_product_id):
+    """
+    Fixture that yields a mock USB context that yields one device that matches based
+    on product id, class, subclass, and protocol.
+    """
+    device = mock_device_with_pid_factory(valid_product_id)
+    device.iterSettings.return_value = [mock_interface_settings_match]
+    mock_context.getDeviceList.return_value = [device]
+    return mock_context
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_no_match(mock_context, mock_device, mock_interface_settings_mismatch_class):
+    """
+    Fixture that yields a mock USB context that yields one device that does not match based
+    on class, subclass, and protocol.
+    """
+    mock_device.iterSettings.return_value = [mock_interface_settings_mismatch_class]
+    mock_context.getDeviceList.return_value = [mock_device]
+    return mock_context
+
+
+@pytest.fixture(scope='function')
 def mock_device(mocker):
     """
     Fixture that yields a mock USB device.
@@ -492,6 +553,49 @@ def test_claim_interface_does_not_detach_kernel_driver_when_inactive(mock_handle
     """
     libusb.claim_interface(mock_handle_inactive_kernel_driver, mock_interface_settings)
     assert not mock_handle_inactive_kernel_driver.detachKernelDriver.called
+
+
+def test_find_device_uses_match_on_class_subclass_protocol(mock_context_one_device_match):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_device` will find device when one is available that
+    matches based on class, subclass, and protocol.
+    """
+    assert libusb.find_device(context=mock_context_one_device_match) != (None, None)
+
+
+def test_find_device_ignores_mismatch_on_class_subclass_protocol(mock_context_one_device_no_match):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_device` will find no devices when one is available that
+    does not match based on class, subclass, and protocol.
+    """
+    assert libusb.find_device(context=mock_context_one_device_no_match) == (None, None)
+
+
+def test_find_device_uses_match_on_serial(mock_context_one_device_match_serial, valid_serial_number):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_device` will find device when one is available that
+    matches based on serial, class, subclass, and protocol.
+    """
+    device, settings = libusb.find_device(serial=valid_serial_number, context=mock_context_one_device_match_serial)
+    assert device.getSerialNumber() == valid_serial_number
+
+
+def test_find_device_uses_match_on_vid(mock_context_one_device_match_vid, valid_vendor_id):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_device` will find device when one is available that
+    matches based on vendor id, class, subclass, and protocol.
+    """
+    device, settings = libusb.find_device(vid=valid_vendor_id, context=mock_context_one_device_match_vid)
+    assert device.getVendorID() == valid_vendor_id
+
+
+def test_find_device_uses_match_on_pid(mock_context_one_device_match_pid, valid_product_id):
+    """
+    Assert that :func:`~adbtp.usb.libusb.find_device` will find device when one is available that
+    matches based on product id, class, subclass, and protocol.
+    """
+    device, settings = libusb.find_device(pid=valid_product_id, context=mock_context_one_device_match_pid)
+    assert device.getProductID() == valid_product_id
 
 
 def test_device_matches_with_no_filter_on_class_subclass_and_protocol(mock_device, mock_interface_settings_match):
