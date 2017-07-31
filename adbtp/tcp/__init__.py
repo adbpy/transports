@@ -14,3 +14,8 @@ from .. import transport
 transport_timeout = functools.partial(transport.transport_timeout,  # pylint: disable=invalid-name
                                       default=socket.getdefaulttimeout(),
                                       seconds=True)
+
+
+from . import async, sync  # noqa pylint: disable=wrong-import-position
+
+__all__ = ['sync', 'async']
