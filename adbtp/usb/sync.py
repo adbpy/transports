@@ -142,7 +142,6 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
         with ctxlib.close_on_error(libusb.open_device_handle(device)) as handle:
             # Claim the device interface. Doing makes this USB device interface unusable to other clients
             # until it is released.
-            libusb.claim_interface(handle, interface_settings)
-
-            return Transport(serial, vid, pid, context, device, handle,
-                             interface_settings, read_endpoint, write_endpoint)
+            with ctxlib.close_on_error(libusb.claim_interface(handle, interface_settings)):
+                return Transport(serial, vid, pid, context, device, handle,
+                                 interface_settings, read_endpoint, write_endpoint)
