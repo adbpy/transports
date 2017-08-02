@@ -225,14 +225,23 @@ def mock_context_class(mocker, mock_context):
 
 
 @pytest.fixture(scope='function')
-def mock_context_one_device_match(mock_context, mock_device, mock_interface_settings_match):
+def mock_context_no_devices(mock_context_class):
+    """
+    Fixture that yields a mock USB context that has no devices.
+    """
+    mock_context_class.getDeviceList.return_value = []
+    return mock_context_class
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_match(mock_context_class, mock_device, mock_interface_settings_match):
     """
     Fixture that yields a mock USB context that yields one device that matches based
     on class, subclass, and protocol.
     """
     mock_device.iterSettings.return_value = [mock_interface_settings_match]
-    mock_context.getDeviceList.return_value = [mock_device]
-    return mock_context
+    mock_context_class.getDeviceList.return_value = [mock_device]
+    return mock_context_class
 
 
 @pytest.fixture(scope='function')
@@ -283,6 +292,34 @@ def mock_context_one_device_no_match(mock_context, mock_device, mock_interface_s
     mock_device.iterSettings.return_value = [mock_interface_settings_mismatch_class]
     mock_context.getDeviceList.return_value = [mock_device]
     return mock_context
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_read_endpoint_no_write(mock_context_class, mock_device,
+                                                   mock_interface_settings_endpoint_factory,
+                                                   valid_read_endpoint_address):
+    """
+    Fixture that yields a mock USB context that yields one device that matches on
+    class, subclass, and protocol but only has a valid read endpoint.
+    """
+    settings = mock_interface_settings_endpoint_factory(valid_read_endpoint_address)
+    mock_device.iterSettings.return_value = [settings]
+    mock_context_class.getDeviceList.return_value = [mock_device]
+    return mock_context_class
+
+
+@pytest.fixture(scope='function')
+def mock_context_one_device_valid_endpoints(mock_context_class, mock_device, mock_endpoint_factory,
+                                            mock_endpoint_valid_read_address, mock_endpoint_valid_write_address,
+                                            mock_interface_settings_factory):
+    """
+    Fixture that yields a mock USB context that yields one device that matches on
+    class, subclass, and protocol and has valid read/write endpoints.
+    """
+    settings = mock_interface_settings_factory(mock_endpoint_valid_read_address, mock_endpoint_valid_write_address)
+    mock_device.iterSettings.return_value = [settings]
+    mock_context_class.getDeviceList.return_value = [mock_device]
+    return mock_context_class
 
 
 @pytest.fixture(scope='function')
@@ -394,6 +431,38 @@ def mock_endpoint(mocker, valid_endpoint_address):
 
 
 @pytest.fixture(scope='function')
+def mock_endpoint_valid_read_address(mocker, valid_read_endpoint_address):
+    """
+    Fixture that yields a mock USB endpoint with a valid read address.
+    """
+    mock = mocker.MagicMock(usb1.USBEndpoint, autospec=True)
+    mock.getAddress.return_value = valid_read_endpoint_address
+    return mock
+
+
+@pytest.fixture(scope='function')
+def mock_endpoint_valid_write_address(mocker, valid_write_endpoint_address):
+    """
+    Fixture that yields a mock USB endpoint with a valid write address.
+    """
+    mock = mocker.MagicMock(usb1.USBEndpoint, autospec=True)
+    mock.getAddress.return_value = valid_write_endpoint_address
+    return mock
+
+
+@pytest.fixture(scope='function')
+def mock_endpoint_factory(mock_endpoint):
+    """
+    Fixture that yields a factory function used to create a USB endpoint at the given address.
+    """
+    def factory(address):
+        mock_endpoint.getAddress.return_value = address
+        return mock_endpoint
+
+    return factory
+
+
+@pytest.fixture(scope='function')
 def mock_interface_settings(mocker, valid_interface_number):
     """
     Fixture that yields mock USB interface settings.
@@ -404,14 +473,26 @@ def mock_interface_settings(mocker, valid_interface_number):
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_match(mock_interface_settings, valid_usb_device_class,
-                                  valid_usb_device_subclass, valid_usb_device_protocol):
+def mock_interface_settings_factory(mock_interface_settings_match):
+    """
+    Fixture that yields a factory function used to create a valid USB interface settings
+    object with a number of endpoints.
+    """
+    def factory(*endpoints):
+        mock_interface_settings_match.iterEndpoints.return_value = endpoints
+        return mock_interface_settings_match
+
+    return factory
+
+
+@pytest.fixture(scope='function')
+def mock_interface_settings_match(mock_interface_settings):
     """
     Fixture that yields mock USB interface settings that is the correct USB class, subclass, and protocol.
     """
-    mock_interface_settings.getClass.return_value = valid_usb_device_class
-    mock_interface_settings.getSubClass.return_value = valid_usb_device_subclass
-    mock_interface_settings.getProtocol.return_value = valid_usb_device_protocol
+    mock_interface_settings.getClass.return_value = libusb.USB_DEVICE_CLASS
+    mock_interface_settings.getSubClass.return_value = libusb.USB_DEVICE_SUBCLASS
+    mock_interface_settings.getProtocol.return_value = libusb.USB_DEVICE_PROTOCOL
     return mock_interface_settings
 
 
@@ -443,14 +524,14 @@ def mock_interface_settings_mismatch_protocol(mock_interface_settings, invalid_u
 
 
 @pytest.fixture(scope='function')
-def mock_interface_settings_endpoint_factory(mocker, mock_interface_settings, mock_endpoint):
+def mock_interface_settings_endpoint_factory(mocker, mock_interface_settings_match, mock_endpoint):
     """
     Fixture that yields a factory function used to create a USB interface settings object
-    for a given endpoint address.
+    for a given endpoint address with a valid class, subclass, and protocol.
     """
     def factory(address):
         mock_endpoint.getAddress.return_value = address
-        mock_interface_settings.iterEndpoints.return_value = [mock_endpoint]
-        return mock_interface_settings
+        mock_interface_settings_match.iterEndpoints.return_value = [mock_endpoint]
+        return mock_interface_settings_match
 
     return factory
