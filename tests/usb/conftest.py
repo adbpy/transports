@@ -367,6 +367,15 @@ def mock_device_with_pid_factory(mock_device):
 
 
 @pytest.fixture(scope='function')
+def mock_device_with_handle(mock_device, mock_handle):
+    """
+    Fixture that yields a mock USB device that returns a mock handle when opened.
+    """
+    mock_device.open.return_value = mock_handle
+    return mock_device
+
+
+@pytest.fixture(scope='function')
 def mock_handle(mocker):
     """
     Fixture that yields a mock USB device handle.

@@ -72,3 +72,12 @@ def test_open_opens_device_handle(mock_context_one_device_valid_endpoints, mock_
     """
     usb.sync.open()
     mock_device.open.assert_called_with()
+
+
+def test_open_claims_device_handle(mock_device_with_handle, mock_context_one_device_valid_endpoints, mock_handle):
+    """
+    Assert that :func:`~adbtp.usb.sync.open` will claim the interface of the open device handle for
+    the selected device.
+    """
+    usb.sync.open()
+    assert mock_handle.claimInterface.called
