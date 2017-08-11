@@ -4,8 +4,8 @@
 
     Contains functionality for synchronous Universal Serial Bus (USB) transport.
 """
-from . import transport_timeout, libusb
-from .. import ctxlib, exceptions, hints, transport
+from . import usb_timeout, libusb
+from .. import ctxlib, exceptions, hints, timeouts, transport
 
 __all__ = ['Transport']
 
@@ -51,7 +51,7 @@ class Transport(transport.Transport):
 
     @libusb.reraise_libusb_errors
     def read(self, num_bytes: hints.Int,
-             timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportReadResult:
+             timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -64,11 +64,11 @@ class Transport(transport.Transport):
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
-        return libusb.read(self._handle, self._read_endpoint, num_bytes, transport_timeout(timeout))
+        return libusb.read(self._handle, self._read_endpoint, num_bytes, usb_timeout(timeout))
 
     @libusb.reraise_libusb_errors
     def write(self, data: hints.Buffer,
-              timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportWriteResult:
+              timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -81,7 +81,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
-        return libusb.write(self._handle, self._write_endpoint, data, transport_timeout(timeout))
+        return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
 
     @libusb.reraise_libusb_errors
     def close(self) -> None:

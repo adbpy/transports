@@ -7,14 +7,14 @@
 import contextlib
 import socket
 
-from . import transport_timeout
-from .. import exceptions, hints, transport
+from . import tcp_timeout
+from .. import exceptions, hints, timeouts, transport
 
 __all__ = ['Transport']
 
 
 @contextlib.contextmanager
-def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout=transport.TIMEOUT_SENTINEL):
+def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout=timeouts.SENTINEL):
     """
     Patches the socket timeout for the scope of the context manager.
 
@@ -63,7 +63,7 @@ class Transport(transport.Transport):
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def read(self, num_bytes: hints.Int,
-             timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportReadResult:
+             timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -76,13 +76,13 @@ class Transport(transport.Transport):
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
-        with socket_timeout_scope(self._socket, transport_timeout(timeout)):
+        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
             return self._socket.recv(num_bytes)
 
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def write(self, data: hints.Buffer,
-              timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportWriteResult:
+              timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -95,7 +95,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
         :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
         """
-        with socket_timeout_scope(self._socket, transport_timeout(timeout)):
+        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
             self._socket.sendall(data)
             return None
 
@@ -115,7 +115,7 @@ class Transport(transport.Transport):
 @exceptions.reraise(OSError)
 @exceptions.reraise_timeout_errors(socket.timeout)
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
-         timeout: hints.Timeout=transport.TIMEOUT_SENTINEL) -> transport.TransportOpenResult:
+         timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbtp.tcp.sync.Transport` transport to the given host/port.
 
@@ -130,5 +130,5 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
     :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
     """
-    sock = socket.create_connection((host, port), transport_timeout(timeout))
+    sock = socket.create_connection((host, port), tcp_timeout(timeout))
     return Transport(host, port, sock)

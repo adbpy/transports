@@ -7,35 +7,9 @@
 import abc
 import typing
 
-from . import hints
+from . import hints, timeouts
 
 __all__ = ['Transport']
-
-
-#: Sentinel object used to indicate when a timeout value was actually passed
-#: since `None` is a valid type.
-TIMEOUT_SENTINEL = object()
-
-
-def transport_timeout(value, sentinel=TIMEOUT_SENTINEL, default=None, seconds=False):
-    """
-    Determine the timeout value in milliseconds to use for a transport operation.
-
-    :param value: Timeout value given
-    :type: value: :class:`~int`, :class:`~NoneType`, or :class:`~object`
-    :param sentinel: Sentinel value that indicates nothing was passed
-    :type sentinel: :class:`~object`
-    :param default: Default value to use when value is the sentinel
-    :type default: :class:`~int`, :class:`~NoneType`
-    :param seconds: Flag indicating if the timeout should be in seconds
-    :type seconds: :class:`~bool`
-    :return: Operation timeout in milliseconds
-    :rtype: :class:`~int`
-    """
-    value = value if value is not sentinel else default
-    if seconds and isinstance(value, int):
-        value //= 1000
-    return value
 
 
 #: Type hint that represents a series of bytes generated from a synchronous or asynchronous transport.
@@ -71,7 +45,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> TransportReadResult:
+    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=timeouts.SENTINEL) -> TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -86,7 +60,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def write(self, data: hints.Buffer, timeout: hints.Timeout=TIMEOUT_SENTINEL) -> TransportWriteResult:
+    def write(self, data: hints.Buffer, timeout: hints.Timeout=timeouts.SENTINEL) -> TransportWriteResult:
         """
         Write bytes to the transport.
 
