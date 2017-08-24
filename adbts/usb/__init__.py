@@ -1,5 +1,5 @@
 """
-    adbtp.usb
+    adbts.usb
     ~~~~~~~~~
 
     Package that contains Universal Serial Bus (USB) transports.

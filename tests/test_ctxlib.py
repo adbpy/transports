@@ -2,12 +2,12 @@
     test_exceptions
     ~~~~~~~~~~~~~~~
 
-    Tests for the :mod:`~adbtp.ctxlib` module.
+    Tests for the :mod:`~adbts.ctxlib` module.
 """
 import pytest
 import tempfile
 
-from adbtp import ctxlib
+from adbts import ctxlib
 
 
 def test_close_on_error_closes_on_exception():

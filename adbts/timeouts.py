@@ -1,5 +1,5 @@
 """
-    adbtp.timeouts
+    adbts.timeouts
     ~~~~~~~~~~~~~~
 
     Contains functionality for dealing with transport call timeouts.
@@ -28,3 +28,45 @@ def timeout(value, sentinel=SENTINEL, default=None, seconds=False):
     if seconds and isinstance(value, int):
         value //= 1000
     return value
+
+
+class Timeout:
+    """
+    Class that represents and tracks a period of time.
+    """
+
+    def __init__(self, seconds):
+        self._seconds = seconds
+        self._start = None
+        self._stop = None
+
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+
+    def __repr__(self):
+        pass
+
+    def __str__(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+
+def wrap(_timeout=None):
+    return Timeout(_timeout)
+
+
+# with timeouts.milliseconds(1000) as timeout:
+#    timeout.remaining_milliseconds
+#    timeout.remaining_seconds
+
+
+

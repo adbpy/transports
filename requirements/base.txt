@@ -1,4 +1,4 @@
-# adbtp/requirements/base.txt
+# adbts/requirements/base.txt
 #
 # Requirements for using this package.
 

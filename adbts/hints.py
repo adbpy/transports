@@ -1,5 +1,5 @@
 """
-    adbtp.hints
+    adbts.hints
     ~~~~~~~~~~~
 
     Contains type hint definitions used across modules in this package.

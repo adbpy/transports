@@ -1,4 +1,4 @@
-# adbtp/requirements/tox.txt
+# adbts/requirements/tox.txt
 #
 # Requirements for executing the test suite using tox.
 

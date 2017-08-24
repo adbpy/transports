@@ -2,11 +2,11 @@
     test_exceptions
     ~~~~~~~~~~~~~~~
 
-    Tests for the :mod:`~adbtp.exceptions` module.
+    Tests for the :mod:`~adbts.exceptions` module.
 """
 import pytest
 
-from adbtp import exceptions
+from adbts import exceptions
 
 
 @pytest.fixture(scope='session', params=[
@@ -27,8 +27,8 @@ def exc_to_catch(request):
 
 def test_reraise_converts_exception_to_transport_protocol_error(exc_to_catch):
     """
-    Assert that :func:`~adbtp.exceptions.reraise` wraps functions that raise stdlib exceptions
-    and reraises them as :class:`~adbtp.exceptions.TransportProtocolError`.
+    Assert that :func:`~adbts.exceptions.reraise` wraps functions that raise stdlib exceptions
+    and reraises them as :class:`~adbts.exceptions.TransportProtocolError`.
     """
     @exceptions.reraise(exc_to_catch)
     def func():
@@ -40,8 +40,8 @@ def test_reraise_converts_exception_to_transport_protocol_error(exc_to_catch):
 
 def test_reraise_timeout_errors_converts_exception_to_transport_timeout_error(exc_to_catch):
     """
-    Assert that :func:`~adbtp.exceptions.reraise_timeout_errors` wraps functions that raise stdlib exceptions
-    and reraises them as :class:`~adbtp.exceptions.TransportTimeoutError`.
+    Assert that :func:`~adbts.exceptions.reraise_timeout_errors` wraps functions that raise stdlib exceptions
+    and reraises them as :class:`~adbts.exceptions.TransportTimeoutError`.
     """
     @exceptions.reraise_timeout_errors(exc_to_catch)
     def func():
