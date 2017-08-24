@@ -30,10 +30,10 @@ def test_open_closes_context_when_no_device_found(mock_context_no_devices):
 
 def test_open_raises_when_no_read_endpoint_found(mock_context_one_device_match):
     """
-    Assert that :func:`~adbts.usb.sync.open` raises a :class:`~adbts.exceptions.TransportProtocolError`
+    Assert that :func:`~adbts.usb.sync.open` raises a :class:`~adbts.exceptions.TransportError`
     exception when unable to find a read endpoint on the USB device.
     """
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         usb.sync.open()
 
 
@@ -42,17 +42,17 @@ def test_open_closes_context_when_no_read_endpoint_found(mock_context_one_device
     Assert that :func:`~adbts.usb.sync.open` will close the USB context it creates when it cannot
     find a read endpoint on the USB device.
     """
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         usb.sync.open()
     mock_context_one_device_match.close.assert_called_with()
 
 
 def test_open_raises_when_no_write_endpoint_found(mock_context_one_device_read_endpoint_no_write):
     """
-    Assert that :func:`~adbts.usb.sync.open` raises a :class:`~adbts.exceptions.TransportProtocolError`
+    Assert that :func:`~adbts.usb.sync.open` raises a :class:`~adbts.exceptions.TransportError`
     exception when unable to find a write endpoint on the USB device.
     """
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         usb.sync.open()
 
 
@@ -61,7 +61,7 @@ def test_open_closes_context_when_no_write_endpoint_found(mock_context_one_devic
     Assert that :func:`~adbts.usb.sync.open` will close the USB context it creates when it cannot
     find a write endpoint on the USB device.
     """
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         usb.sync.open()
     mock_context_one_device_read_endpoint_no_write.close.assert_called_with()
 

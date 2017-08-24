@@ -73,7 +73,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
@@ -92,7 +92,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :rtype: :class:`~NoneType`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
@@ -106,7 +106,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         self._socket.close()
         self._socket = None
@@ -127,7 +127,7 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
     :return: Synchronous TCP transport
     :rtype: :class:`~adbts.tcp.sync.Transport`
-    :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+    :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
     :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
     """
     sock = socket.create_connection((host, port), tcp_timeout(timeout))

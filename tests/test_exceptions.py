@@ -25,16 +25,16 @@ def exc_to_catch(request):
     return request.param
 
 
-def test_reraise_converts_exception_to_transport_protocol_error(exc_to_catch):
+def test_reraise_converts_exception_to_transport_error(exc_to_catch):
     """
     Assert that :func:`~adbts.exceptions.reraise` wraps functions that raise stdlib exceptions
-    and reraises them as :class:`~adbts.exceptions.TransportProtocolError`.
+    and reraises them as :class:`~adbts.exceptions.TransportError`.
     """
     @exceptions.reraise(exc_to_catch)
     def func():
         raise exc_to_catch()
 
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         func()
 
 
