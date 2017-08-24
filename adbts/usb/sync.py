@@ -61,7 +61,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         return libusb.read(self._handle, self._read_endpoint, num_bytes, usb_timeout(timeout))
@@ -78,7 +78,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :rtype: :class:`~NoneType`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
@@ -90,7 +90,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         libusb.close(self._context, self._handle, self._interface_settings)
         self._context = None
@@ -130,12 +130,12 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
         # Grab first device interface endpoint that is used for reading.
         read_endpoint = libusb.find_read_endpoint(interface_settings)
         if not read_endpoint:
-            raise exceptions.TransportProtocolError('Cannot find read endpoint for USB device interface')
+            raise exceptions.TransportError('Cannot find read endpoint for USB device interface')
 
         # Grab first device interface endpoint that is used for writing.
         write_endpoint = libusb.find_write_endpoint(interface_settings)
         if not write_endpoint:
-            raise exceptions.TransportProtocolError('Cannot find write endpoint for USB device interface')
+            raise exceptions.TransportError('Cannot find write endpoint for USB device interface')
 
         # Open this USB device and grab a handle required to perform I/O. Grabbing a handle is purely a libusb
         # construct and this does not sent any data over the bus.

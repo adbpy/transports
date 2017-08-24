@@ -16,31 +16,31 @@ ExceptionTypes = typing.Union[ExceptionType,  # pylint: disable=invalid-name
                               typing.Tuple[ExceptionType, ...]]  # pylint: disable=invalid-sequence-index
 
 
-class TransportProtocolError(Exception):
+class TransportError(Exception):
     """
     Base exception for all transport related errors.
     """
 
 
-class TransportTimeoutError(TransportProtocolError):
+class TransportTimeoutError(TransportError):
     """
     Exception raised when a transport action exceeds the specified timeout.
     """
 
 
-class TransportClosedError(TransportProtocolError):
+class TransportClosedError(TransportError):
     """
     Exception raised when attempting to perform an action of a closed transport.
     """
 
 
-class TransportEndpointNotFound(TransportProtocolError):
+class TransportEndpointNotFound(TransportError):
     """
     Exception raised when the transport endpoint (peer) cannot be found or was disconnected.
     """
 
 
-class TransportAccessDenied(TransportProtocolError):
+class TransportAccessDenied(TransportError):
     """
     Exception raised when caller has insufficient permissions to perform an action.
     """
@@ -49,7 +49,7 @@ class TransportAccessDenied(TransportProtocolError):
 def reraise(exc_to_catch: ExceptionTypes):
     """
     Decorator that catches specific exception types and re-raises them as
-    :class:`~adbts.exceptions.TransportProtocolError`.
+    :class:`~adbts.exceptions.TransportError`.
 
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`
@@ -60,7 +60,7 @@ def reraise(exc_to_catch: ExceptionTypes):
             try:
                 return func(*args, **kwargs)
             except exc_to_catch as ex:
-                raise TransportProtocolError('Transport encountered an error') from ex
+                raise TransportError('Transport encountered an error') from ex
         return wrapper
     return decorator
 

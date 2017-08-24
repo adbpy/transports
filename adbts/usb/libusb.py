@@ -75,7 +75,7 @@ USB_ENDPOINT_DIRECTION_IN = 0x80
 def reraise_libusb_errors(func: hints.Callable):
     """
     Decorator that catches :class:`~usb1.USBError` exceptions and re-raises them as
-    specific exception types that derive from :class:`~adbts.exceptions.TransportProtocolError`.
+    specific exception types that derive from :class:`~adbts.exceptions.TransportError`.
     """
 
     @functools.wraps(func)
@@ -93,7 +93,7 @@ def reraise_libusb_errors(func: hints.Callable):
                 raise exceptions.TransportTimeoutError(
                     'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from ex
             else:
-                raise exceptions.TransportProtocolError(
+                raise exceptions.TransportError(
                     'Unhandled USB transport error {}'.format(getattr(ex, '__name__', str(ex)))) from ex
 
     return decorator
@@ -116,7 +116,7 @@ def read(handle: Handle, endpoint: Endpoint, num_bytes: hints.Int, timeout: hint
     :raises :class:`~adbts.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
     :raises :class:`~adbts.exceptions.TransportAccessDenied`: When we lack permissions to read
     :raises :class:`~adbts.exceptions.TransportTimeoutError`: When read call exceeds timeout
-    :raises :class:`~adbts.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
+    :raises :class:`~adbts.exceptions.TransportError`: When USB transport encounters unhandled error
     """
     return handle.bulkRead(endpoint.getAddress(), num_bytes, timeout)
 
@@ -138,12 +138,12 @@ def write(handle: Handle, endpoint: Endpoint, data: hints.Buffer, timeout: hints
     :raises :class:`~adbts.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
     :raises :class:`~adbts.exceptions.TransportAccessDenied`: When we lack permissions to write
     :raises :class:`~adbts.exceptions.TransportTimeoutError`: When write call exceeds timeout
-    :raises :class:`~adbts.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
-    :raises :class:`~adbts.exceptions.TransportProtocolError`: When not all bytes were written
+    :raises :class:`~adbts.exceptions.TransportError`: When USB transport encounters unhandled error
+    :raises :class:`~adbts.exceptions.TransportError`: When not all bytes were written
     """
     num_bytes = handle.bulkWrite(endpoint.getAddress(), data, timeout)
     if num_bytes != len(data):
-        raise exceptions.TransportProtocolError(
+        raise exceptions.TransportError(
             'Only wrote {} bytes when expected {} bytes'.format(num_bytes, len(data)))
 
 

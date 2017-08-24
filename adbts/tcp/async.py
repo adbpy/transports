@@ -59,7 +59,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         data = yield from asyncio.wait_for(self._reader.read(num_bytes),
@@ -81,7 +81,7 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :return: :class:`~NoneType`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error.
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error.
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         self._writer.write(data)
@@ -95,7 +95,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         self._writer.close()
         self._writer = None
@@ -120,7 +120,7 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :type loop: :class:`~asyncio.events.AbstractEventLoop`
     :return: Asynchronous TCP transport
     :rtype: :class:`~adbts.tcp.async.Transport`
-    :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+    :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
     """
     reader, writer = yield from asyncio.wait_for(asyncio.open_connection(host, port, loop=loop),
                                                  timeout=tcp_timeout(timeout), loop=loop)

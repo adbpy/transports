@@ -72,7 +72,7 @@ def test_write_throws_error_when_not_all_bytes_written(mock_write_handle_incorre
     Assert that :func:`~adbts.usb.libusb.write` calls :meth:`~usb1.USBDeviceHandle.bulkWrite` on the given
     handle using the endpoint address and other args.
     """
-    with pytest.raises(exceptions.TransportProtocolError):
+    with pytest.raises(exceptions.TransportError):
         libusb.write(mock_write_handle_incorrect_return_value, mock_endpoint, valid_bytes, valid_timeout_ms)
 
 
