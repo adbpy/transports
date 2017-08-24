@@ -1,5 +1,5 @@
 """
-    adbtp.timeouts
+    adbts.timeouts
     ~~~~~~~~~~~~~~
 
     Contains functionality for dealing with transport call timeouts.

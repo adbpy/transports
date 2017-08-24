@@ -1,4 +1,4 @@
-# adbtp/requirements/test.txt
+# adbts/requirements/test.txt
 #
 # Requirements for executing the test suite.
 

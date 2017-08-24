@@ -1,5 +1,5 @@
 """
-    adbtp.usb.libusb
+    adbts.usb.libusb
     ~~~~~~~~~~~~~~~~
 
     Functional wrapper around the `usb1` and `libusb` packages.
@@ -9,7 +9,7 @@ import functools
 import typing
 import usb1
 
-from adbtp import exceptions, hints
+from adbts import exceptions, hints
 
 
 #: Type hint alias for libusb :class:`~usb1.USBContext`.
@@ -75,7 +75,7 @@ USB_ENDPOINT_DIRECTION_IN = 0x80
 def reraise_libusb_errors(func: hints.Callable):
     """
     Decorator that catches :class:`~usb1.USBError` exceptions and re-raises them as
-    specific exception types that derive from :class:`~adbtp.exceptions.TransportProtocolError`.
+    specific exception types that derive from :class:`~adbts.exceptions.TransportProtocolError`.
     """
 
     @functools.wraps(func)
@@ -113,10 +113,10 @@ def read(handle: Handle, endpoint: Endpoint, num_bytes: hints.Int, timeout: hint
     :type timeout: :class:`~int`
     :return: Collection of bytes read
     :rtype: :class:`~bytes` or :class:`~bytearray`
-    :raises :class:`~adbtp.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
-    :raises :class:`~adbtp.exceptions.TransportAccessDenied`: When we lack permissions to read
-    :raises :class:`~adbtp.exceptions.TransportTimeoutError`: When read call exceeds timeout
-    :raises :class:`~adbtp.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
+    :raises :class:`~adbts.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
+    :raises :class:`~adbts.exceptions.TransportAccessDenied`: When we lack permissions to read
+    :raises :class:`~adbts.exceptions.TransportTimeoutError`: When read call exceeds timeout
+    :raises :class:`~adbts.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
     """
     return handle.bulkRead(endpoint.getAddress(), num_bytes, timeout)
 
@@ -135,11 +135,11 @@ def write(handle: Handle, endpoint: Endpoint, data: hints.Buffer, timeout: hints
     :type timeout: :class:`~int`
     :return: Nothing
     :rtype: :class:`~NoneType`
-    :raises :class:`~adbtp.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
-    :raises :class:`~adbtp.exceptions.TransportAccessDenied`: When we lack permissions to write
-    :raises :class:`~adbtp.exceptions.TransportTimeoutError`: When write call exceeds timeout
-    :raises :class:`~adbtp.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
-    :raises :class:`~adbtp.exceptions.TransportProtocolError`: When not all bytes were written
+    :raises :class:`~adbts.exceptions.TransportEndpointNotFound`: When device is not found/disconnected
+    :raises :class:`~adbts.exceptions.TransportAccessDenied`: When we lack permissions to write
+    :raises :class:`~adbts.exceptions.TransportTimeoutError`: When write call exceeds timeout
+    :raises :class:`~adbts.exceptions.TransportProtocolError`: When USB transport encounters unhandled error
+    :raises :class:`~adbts.exceptions.TransportProtocolError`: When not all bytes were written
     """
     num_bytes = handle.bulkWrite(endpoint.getAddress(), data, timeout)
     if num_bytes != len(data):

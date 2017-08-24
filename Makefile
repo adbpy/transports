@@ -43,20 +43,20 @@ codeclimate:  ## Run codeclimate analysis.
 
 .PHONY: isort
 isort:  ## Run isort on the package.
-	@isort --recursive --check-only adbtp tests
+	@isort --recursive --check-only adbts tests
 
 .PHONY: mypy
 mypy:  ## Run mypy static analysis checks on the package.
-	@mypy adbtp
+	@mypy adbts
 
 .PHONY: pydocstyle
 pydocstyle:  ## Run pydocstyle on the package
-	@pydocstyle adbtp
+	@pydocstyle adbts
 
 .PHONY: pylint
 pylint:  ## Run pylint on the package.
 ifneq (${TRAVIS_PYTHON_VERSION},nightly)
-	@pylint --rcfile .pylintrc adbtp
+	@pylint --rcfile .pylintrc adbts
 endif
 
 .PHONY: lint

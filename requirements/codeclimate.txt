@@ -1,4 +1,4 @@
-# adbtp/requirements/codeclimate.txt
+# adbts/requirements/codeclimate.txt
 #
 # Requirements for interacting with codeclimate.com from Travis CI.
 

@@ -1,8 +1,8 @@
 """
-    adbtp
+    adbts
     ~~~~~
 
-    Android Debug Bridge (ADB) Transport Protocol
+    Android Debug Bridge (ADB) Transports
 
     :copyright: (c) 2017 Andrew Hawker.
     :license: Apache 2.0, see LICENSE for more details.
@@ -20,20 +20,20 @@ version_regex = re.compile(r'__version__\s+=\s+(.*)')
 
 
 def get_version():
-    with open('adbtp/__init__.py', 'r') as f:
+    with open('adbts/__init__.py', 'r') as f:
         return str(ast.literal_eval(version_regex.search(f.read()).group(1)))
 
 
 setup(
-    name='adbtp',
+    name='adbts',
     version=get_version(),
     author='Andrew Hawker',
     author_email='andrew.r.hawker@gmail.com',
-    url='https://github.com/adbpy/transport-protocol',
+    url='https://github.com/adbpy/transports',
     license='Apache 2.0',
-    description='Android Debug Bridge (ADB) Transport Protocol',
+    description='Android Debug Bridge (ADB) Transports',
     long_description=__doc__,
-    packages=['adbtp'],
+    packages=['adbts'],
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

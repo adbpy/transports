@@ -1,5 +1,5 @@
 """
-    adbtp.tcp.sync
+    adbts.tcp.sync
     ~~~~~~~~~~~~~~
 
     Contains functionality for synchronous Transmission Control Protocol (TCP) transport.
@@ -73,8 +73,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
             return self._socket.recv(num_bytes)
@@ -92,8 +92,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :rtype: :class:`~NoneType`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
             self._socket.sendall(data)
@@ -106,7 +106,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
         """
         self._socket.close()
         self._socket = None
@@ -117,7 +117,7 @@ class Transport(transport.Transport):
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
          timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportOpenResult:
     """
-    Open a new :class:`~adbtp.tcp.sync.Transport` transport to the given host/port.
+    Open a new :class:`~adbts.tcp.sync.Transport` transport to the given host/port.
 
     :param host: Remote host
     :type host: :class:`~str`
@@ -126,9 +126,9 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :param timeout: Maximum number of milliseconds on blocking socket operations before raising an exception
     :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
     :return: Synchronous TCP transport
-    :rtype: :class:`~adbtp.tcp.sync.Transport`
-    :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-    :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+    :rtype: :class:`~adbts.tcp.sync.Transport`
+    :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+    :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
     """
     sock = socket.create_connection((host, port), tcp_timeout(timeout))
     return Transport(host, port, sock)

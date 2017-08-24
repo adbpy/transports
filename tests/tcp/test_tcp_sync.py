@@ -2,11 +2,11 @@
     test_tcp_sync
     ~~~~~~~~~~~~~
 
-    Tests for the :mod:`~adbtp.tpc.sync` module.
+    Tests for the :mod:`~adbts.tpc.sync` module.
 """
 import pytest
 
-from adbtp.tcp import sync
+from adbts.tcp import sync
 
 
 @pytest.mark.xfail(reason='Not implemented')

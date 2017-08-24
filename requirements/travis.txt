@@ -1,4 +1,4 @@
-# adbtp/requirements/travis.txt
+# adbts/requirements/travis.txt
 #
 # Requirements for executing the test suite on Travis CI.
 

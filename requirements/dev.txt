@@ -1,4 +1,4 @@
-# adbtp/requirements/dev.txt
+# adbts/requirements/dev.txt
 #
 # Requirements for using developing package.
 

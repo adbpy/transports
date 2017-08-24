@@ -1,5 +1,5 @@
 """
-    adbtp.exceptions
+    adbts.exceptions
     ~~~~~~~~~~~~~~~~
 
     Contains exception types used across the package.
@@ -18,7 +18,7 @@ ExceptionTypes = typing.Union[ExceptionType,  # pylint: disable=invalid-name
 
 class TransportProtocolError(Exception):
     """
-    Base exception for all transport protocol related errors.
+    Base exception for all transport related errors.
     """
 
 
@@ -49,7 +49,7 @@ class TransportAccessDenied(TransportProtocolError):
 def reraise(exc_to_catch: ExceptionTypes):
     """
     Decorator that catches specific exception types and re-raises them as
-    :class:`~adbtp.exceptions.TransportProtocolError`.
+    :class:`~adbts.exceptions.TransportProtocolError`.
 
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`

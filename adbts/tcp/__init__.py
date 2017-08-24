@@ -1,5 +1,5 @@
 """
-    adbtp.tcp
+    adbts.tcp
     ~~~~~~~~~
 
     Package that contains Transmission Control Protocol (TCP) transports.

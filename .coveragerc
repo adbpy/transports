@@ -1,5 +1,5 @@
 [run]
-source = adbtp
+source = adbts
 branch = true
 omit = tests/*
 

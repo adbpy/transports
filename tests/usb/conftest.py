@@ -7,8 +7,8 @@
 import pytest
 import usb1
 
-from adbtp import exceptions
-from adbtp.usb import libusb
+from adbts import exceptions
+from adbts.usb import libusb
 
 
 @pytest.fixture(scope='session', params=[

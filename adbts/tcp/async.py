@@ -1,5 +1,5 @@
 """
-    adbtp.tcp.async
+    adbts.tcp.async
     ~~~~~~~~~~~~~~~
 
     Contains functionality for asynchronous Transmission Control Protocol (TCP) transport using `asyncio`.
@@ -59,8 +59,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         data = yield from asyncio.wait_for(self._reader.read(num_bytes),
                                            timeout=tcp_timeout(timeout),
@@ -81,8 +81,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :return: :class:`~NoneType`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error.
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error.
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         self._writer.write(data)
         yield from asyncio.wait_for(self._writer.drain(), timeout=tcp_timeout(timeout), loop=self._loop)
@@ -95,7 +95,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
         """
         self._writer.close()
         self._writer = None
@@ -108,7 +108,7 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
          timeout: hints.Timeout=timeouts.SENTINEL,
          loop: hints.EventLoop=None) -> transport.TransportOpenResult:
     """
-    Open a new :class:`~adbtp.tcp.async.Transport` transport to the given host/port.
+    Open a new :class:`~adbts.tcp.async.Transport` transport to the given host/port.
 
     :param host: Remote host
     :type host: :class:`~str`
@@ -119,8 +119,8 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :param loop: Asyncio Event Loop
     :type loop: :class:`~asyncio.events.AbstractEventLoop`
     :return: Asynchronous TCP transport
-    :rtype: :class:`~adbtp.tcp.async.Transport`
-    :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
+    :rtype: :class:`~adbts.tcp.async.Transport`
+    :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
     """
     reader, writer = yield from asyncio.wait_for(asyncio.open_connection(host, port, loop=loop),
                                                  timeout=tcp_timeout(timeout), loop=loop)

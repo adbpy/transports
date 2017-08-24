@@ -1,5 +1,5 @@
 """
-    adbtp.usb.sync
+    adbts.usb.sync
     ~~~~~~~~~~~~~~
 
     Contains functionality for synchronous Universal Serial Bus (USB) transport.
@@ -61,8 +61,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return: Collection of bytes read
         :rtype: :class:`~bytes` or :class:`~bytearray`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         return libusb.read(self._handle, self._read_endpoint, num_bytes, usb_timeout(timeout))
 
@@ -78,8 +78,8 @@ class Transport(transport.Transport):
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
         :rtype: :class:`~NoneType`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
-        :raises :class:`~adbtp.exceptions.TimeoutError`: When timeout is exceeded
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
 
@@ -90,7 +90,7 @@ class Transport(transport.Transport):
 
         :return: Nothing
         :rtype: `None`
-        :raises :class:`~adbtp.exceptions.TransportProtocolError`: When underlying transport encounters an error
+        :raises :class:`~adbts.exceptions.TransportProtocolError`: When underlying transport encounters an error
         """
         libusb.close(self._context, self._handle, self._interface_settings)
         self._context = None
@@ -105,7 +105,7 @@ class Transport(transport.Transport):
 def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pylint: disable=redefined-builtin
          pid: libusb.ProductId = None) -> transport.TransportOpenResult:
     """
-    Open a new :class:`~adbtp.usb.sync.Transport` transport to a USB device.
+    Open a new :class:`~adbts.usb.sync.Transport` transport to a USB device.
 
     :param serial: Optional serial number filter
     :type serial: :class:`~str` or :class:`~NoneType`
@@ -114,7 +114,7 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
     :param vid: Optional product id filter
     :type pid: :class:`~int` or :class:`~NoneType`
     :return: Synchronous USB transport
-    :rtype: :class:`~adbtp.usb.sync.Transport`
+    :rtype: :class:`~adbts.usb.sync.Transport`
     """
     # Create a new context for accessing a USB device. Libusb uses a context structure to represent
     # individual user sessions and prevent interference between then when using a device concurrently.

@@ -1,4 +1,4 @@
-# adbtp/requirements/docs.txt
+# adbts/requirements/docs.txt
 #
 # Requirements for generating package documentation.
 
