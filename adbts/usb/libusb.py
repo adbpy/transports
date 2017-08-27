@@ -41,7 +41,7 @@ InterfaceSettings = usb1.USBInterfaceSetting  # pylint: disable=invalid-name
 
 
 #: Type hint for USB context that is optional.
-OptionalContext = typing.Optional[Context]
+OptionalContext = typing.Optional[Context]  # pylint: disable=invalid-name
 
 
 #: Type hint for a USB product id.
@@ -83,13 +83,13 @@ def reraise_libusb_errors(func: hints.Callable):
         try:
             return func(*args, **kwargs)
         except usb1.USBError as ex:
-            if ex.value == usb1.ERROR_NO_DEVICE:
+            if ex.value == usb1.ERROR_NO_DEVICE:  # pylint: disable=no-member
                 raise exceptions.TransportEndpointNotFound(
                     'Device not found or has been disconnected') from ex
-            elif ex.value == usb1.ERROR_ACCESS:
+            elif ex.value == usb1.ERROR_ACCESS:  # pylint: disable=no-member
                 raise exceptions.TransportAccessDenied(
                     'Insufficient permissions or interface already claimed') from ex
-            elif ex.value == usb1.ERROR_TIMEOUT:
+            elif ex.value == usb1.ERROR_TIMEOUT:  # pylint: disable=no-member
                 raise exceptions.TransportTimeoutError(
                     'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from ex
             else:
@@ -254,7 +254,7 @@ def find_devices_generator(serial: SerialNumber=None, vid: VendorId=None, pid: P
                 if device_matches(device, settings, serial, vid, pid))
 
 
-def find_devices_interfaces_generator(context: OptionalContext=None,
+def find_devices_interfaces_generator(context: OptionalContext=None,  # pylint: disable=invalid-name
                                       skip_on_error: hints.Bool=True) -> DeviceList:
     """
     Generator function that yields combinations of all USB devices with settings
