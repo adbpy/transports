@@ -4,6 +4,8 @@
 
     Contains functionality for dealing with transport call timeouts.
 """
+__all__ = ['SENTINEL', 'timeout']
+
 #: Sentinel object used to indicate when a timeout value was actually passed
 #: since `None` is a valid type.
 SENTINEL = object()
