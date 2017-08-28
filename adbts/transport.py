@@ -5,9 +5,10 @@
     Defines abstract base class that all transports must implement.
 """
 import abc
+import functools
 import typing
 
-from . import hints, timeouts
+from . import exceptions, hints, timeouts
 
 __all__ = ['Transport']
 
@@ -18,6 +19,44 @@ TransportReadResult = typing.Union[hints.Buffer, hints.BufferGenerator]  # pylin
 
 #: Type hint that represents an empty result from a synchronous or asynchronous transport.
 TransportWriteResult = typing.Union[None, hints.NoneGenerator]  # pylint: disable=invalid-name
+
+
+def ensure_opened(func):
+    """
+    Decorator used to guard :class:`~adbts.transport.Transport` methods that require it not to be closed.
+    """
+    @functools.wraps(func)
+    def decorator(self, *args, **kwargs):  # pylint: disable=missing-docstring
+        if self.closed:
+            raise exceptions.TransportClosedError('Cannot perform this action against closed transport')
+        return func(self, *args, **kwargs)
+    return decorator
+
+
+def ensure_num_bytes(func):
+    """
+    Decorator that returns a default value when wrapped function is given a 'num_bytes' argument that
+    won't read any data.
+    """
+    @functools.wraps(func)
+    def decorator(self, num_bytes, *args, **kwargs):  # pylint: disable=missing-docstring
+        if num_bytes <= 0:
+            return b''
+        return func(self, num_bytes, *args, **kwargs)
+    return decorator
+
+
+def ensure_data(func):
+    """
+    Decorator that returns a default value when wrapped function is given a 'data' argument that
+    won't write any data.
+    """
+    @functools.wraps(func)
+    def decorator(self, data, *args, **kwargs):  # pylint: disable=missing-docstring
+        if not data:
+            return None
+        return func(self, data, *args, **kwargs)
+    return decorator
 
 
 class Transport(metaclass=abc.ABCMeta):

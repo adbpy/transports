@@ -46,6 +46,8 @@ class Transport(transport.Transport):
         return self._reader is None or self._writer is None
 
     @asyncio.coroutine
+    @transport.ensure_opened
+    @transport.ensure_num_bytes
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
     def read(self, num_bytes: hints.Int,
@@ -68,6 +70,8 @@ class Transport(transport.Transport):
         return data
 
     @asyncio.coroutine
+    @transport.ensure_opened
+    @transport.ensure_data
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
     def write(self, data: hints.Buffer,
@@ -88,6 +92,7 @@ class Transport(transport.Transport):
         yield from asyncio.wait_for(self._writer.drain(), timeout=tcp_timeout(timeout), loop=self._loop)
         return None
 
+    @transport.ensure_opened
     @exceptions.reraise(OSError)
     def close(self) -> None:
         """

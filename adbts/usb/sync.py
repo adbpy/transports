@@ -49,6 +49,8 @@ class Transport(transport.Transport):
         """
         return self._context is None
 
+    @transport.ensure_opened
+    @transport.ensure_num_bytes
     @libusb.reraise_libusb_errors
     def read(self, num_bytes: hints.Int,
              timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportReadResult:
@@ -66,6 +68,8 @@ class Transport(transport.Transport):
         """
         return libusb.read(self._handle, self._read_endpoint, num_bytes, usb_timeout(timeout))
 
+    @transport.ensure_opened
+    @transport.ensure_data
     @libusb.reraise_libusb_errors
     def write(self, data: hints.Buffer,
               timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportWriteResult:
@@ -83,6 +87,7 @@ class Transport(transport.Transport):
         """
         return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
 
+    @transport.ensure_opened
     @libusb.reraise_libusb_errors
     def close(self) -> None:
         """

@@ -60,6 +60,8 @@ class Transport(transport.Transport):
         """
         return self._socket is None or self._socket._closed  # pylint: disable=protected-access
 
+    @transport.ensure_opened
+    @transport.ensure_num_bytes
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def read(self, num_bytes: hints.Int,
@@ -79,6 +81,8 @@ class Transport(transport.Transport):
         with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
             return self._socket.recv(num_bytes)
 
+    @transport.ensure_opened
+    @transport.ensure_data
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def write(self, data: hints.Buffer,
@@ -99,6 +103,7 @@ class Transport(transport.Transport):
             self._socket.sendall(data)
             return None
 
+    @transport.ensure_opened
     @exceptions.reraise(OSError)
     def close(self) -> None:
         """
