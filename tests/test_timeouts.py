@@ -26,7 +26,7 @@ def default(request):
 
 @pytest.fixture(scope='session', params=[
     None,
-    timeouts.SENTINEL
+    timeouts.UNDEFINED
 ])
 def sentinel(request):
     """

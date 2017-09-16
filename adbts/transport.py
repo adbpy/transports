@@ -84,7 +84,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=timeouts.SENTINEL) -> TransportReadResult:
+    def read(self, num_bytes: hints.Int, timeout: hints.Timeout=timeouts.UNDEFINED) -> TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -99,7 +99,7 @@ class Transport(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def write(self, data: hints.Buffer, timeout: hints.Timeout=timeouts.SENTINEL) -> TransportWriteResult:
+    def write(self, data: hints.Buffer, timeout: hints.Timeout=timeouts.UNDEFINED) -> TransportWriteResult:
         """
         Write bytes to the transport.
 

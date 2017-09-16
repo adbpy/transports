@@ -53,7 +53,7 @@ class Transport(transport.Transport):
     @transport.ensure_num_bytes
     @libusb.reraise_libusb_errors
     def read(self, num_bytes: hints.Int,
-             timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportReadResult:
+             timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -72,7 +72,7 @@ class Transport(transport.Transport):
     @transport.ensure_data
     @libusb.reraise_libusb_errors
     def write(self, data: hints.Buffer,
-              timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportWriteResult:
+              timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 

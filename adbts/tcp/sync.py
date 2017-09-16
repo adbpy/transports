@@ -14,7 +14,7 @@ __all__ = ['Transport']
 
 
 @contextlib.contextmanager
-def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout=timeouts.SENTINEL):
+def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout=timeouts.UNDEFINED):
     """
     Patches the socket timeout for the scope of the context manager.
 
@@ -65,7 +65,7 @@ class Transport(transport.Transport):
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def read(self, num_bytes: hints.Int,
-             timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportReadResult:
+             timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -86,7 +86,7 @@ class Transport(transport.Transport):
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(socket.timeout)
     def write(self, data: hints.Buffer,
-              timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportWriteResult:
+              timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -120,7 +120,7 @@ class Transport(transport.Transport):
 @exceptions.reraise(OSError)
 @exceptions.reraise_timeout_errors(socket.timeout)
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
-         timeout: hints.Timeout=timeouts.SENTINEL) -> transport.TransportOpenResult:
+         timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbts.tcp.sync.Transport` transport to the given host/port.
 

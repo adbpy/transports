@@ -4,14 +4,14 @@
 
     Contains functionality for dealing with transport call timeouts.
 """
-__all__ = ['SENTINEL', 'timeout']
+__all__ = ['UNDEFINED', 'timeout']
 
 #: Sentinel object used to indicate when a timeout value was actually passed
 #: since `None` is a valid type.
-SENTINEL = object()
+UNDEFINED = object()
 
 
-def timeout(value, sentinel=SENTINEL, default=None, seconds=False):
+def timeout(value, sentinel=UNDEFINED, default=None, seconds=False):
     """
     Determine the timeout value in milliseconds to use for a transport operation.
 
