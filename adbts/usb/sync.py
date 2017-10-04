@@ -53,7 +53,7 @@ class Transport(transport.Transport):
     @transport.ensure_num_bytes
     @libusb.reraise_libusb_errors
     def read(self, num_bytes: hints.Int,
-             timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportReadResult:
+             timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
 
@@ -72,7 +72,7 @@ class Transport(transport.Transport):
     @transport.ensure_data
     @libusb.reraise_libusb_errors
     def write(self, data: hints.Buffer,
-              timeout: hints.Timeout=timeouts.UNDEFINED) -> transport.TransportWriteResult:
+              timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
 
@@ -107,8 +107,8 @@ class Transport(transport.Transport):
 
 
 @libusb.reraise_libusb_errors
-def open(serial: libusb.SerialNumber=None, vid: libusb.VendorId=None,  # pylint: disable=redefined-builtin
-         pid: libusb.ProductId=None) -> transport.TransportOpenResult:
+def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pylint: disable=redefined-builtin
+         pid: libusb.ProductId = None) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbts.usb.sync.Transport` transport to a USB device.
 
