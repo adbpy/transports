@@ -7,6 +7,9 @@
 import functools
 import typing
 
+__all__ = ['TransportError', 'TransportTimeoutError', 'TransportClosedError',
+           'TransportEndpointNotFound', 'TransportAccessDenied']
+
 #: Type hint that defines a exception type that derives from :class:`~Exception`.
 ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)  # pylint: disable=invalid-name
 
