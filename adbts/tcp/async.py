@@ -92,7 +92,7 @@ class Transport(transport.Transport):
         yield from asyncio.wait_for(self._writer.drain(), timeout=tcp_timeout(timeout), loop=self._loop)
         return None
 
-    @transport.ensure_opened
+    @transport.ensure_no_op_when_closed
     @exceptions.reraise(OSError)
     def close(self) -> None:
         """

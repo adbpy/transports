@@ -21,6 +21,19 @@ TransportReadResult = typing.Union[hints.Buffer, hints.BufferGenerator]  # pylin
 TransportWriteResult = typing.Union[None, hints.NoneGenerator]  # pylint: disable=invalid-name
 
 
+def ensure_no_op_when_closed(func):
+    """
+    Decorator used to guard :class:`~adbts.transport.Transport` methods to perform a no-op when the transport
+    is closed.
+    """
+    @functools.wraps(func)
+    def decorator(self, *args, **kwargs):
+        if self.closed:
+            return None
+        return func(self, *args, **kwargs)
+    return decorator
+
+
 def ensure_opened(func):
     """
     Decorator used to guard :class:`~adbts.transport.Transport` methods that require it not to be closed.

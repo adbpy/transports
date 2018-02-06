@@ -87,7 +87,7 @@ class Transport(transport.Transport):
         """
         return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
 
-    @transport.ensure_opened
+    @transport.ensure_no_op_when_closed
     @libusb.reraise_libusb_errors
     def close(self) -> None:
         """

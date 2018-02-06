@@ -103,7 +103,7 @@ class Transport(transport.Transport):
             self._socket.sendall(data)
             return None
 
-    @transport.ensure_opened
+    @transport.ensure_no_op_when_closed
     @exceptions.reraise(OSError)
     def close(self) -> None:
         """
