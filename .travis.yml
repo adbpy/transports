@@ -14,17 +14,6 @@ script: make travis-script
 after_success: codeclimate-test-reporter
 deploy:
 - provider: pypi
-  server: https://testpypi.python.org/pypi
-  user: Andrew.Hawker
-  password:
-    secure: k1gv6sIkspC6+EeS+6o88J1D+YD210UlEdc47/i0ViwZMgMWVAVivEfzJY9ykBOSqq8LgvZ5WUCMAxsN56bEOcEM6REgIEthkepvRUj5J8l42IV2x33ZKzFFS6Z4+T5cO4HqXgJqEsyYq7kMP0U+f0Ns7DojjEzEc8Hdv0uuuUUlfTZJ0RfjykF0eFSsNHIqIP6ongRfWymmQirv1PlJIS1aD/Ih7MOD4RUaOs6vwamX63fnvhmDVuqihZW6zaP8rrC9kPVNYhX/7X6Rxixhp2flsAOk+nKwl6R2dUWbDxOIPtwQnef0kYwCqzK3xiog1L+uPZxW298qXhDq/QaAkgz8lPC6qJrCtkuW5yKVFg7fHitCegm335FoXuQm/XSzbR+xgz3dk5jEPBWLkT9hKyqS1S39ZAdfc5wdpR8slMEzywECbtlkmf8OyvuZYtEnUKzHpN5bVI2SiSUrieXmXN9NfocS7qomSupJ/MeQmgayfNFTJ+Ud1hWkubJjrAhaKH97rAhZSu4njqM6GWRBR8BFoWNv31NX0GLuUhVSCgTVsL7waXJvQRJZijeJwNgRn5W8mdP6LCMG78NcsJGWeOQkr9LCdyK2r4dGynbAmASGy9g6eCQ5PexybiuN6x+bWeCF+XuwnpGyypRWsGyAdoS4HTtAOlkRvafdDSSsti8=
-  distributions: sdist bdist_wheel
-  skip_cleanup: true
-  on:
-    branch: master
-    tags: false
-    condition: $TRAVIS_PYTHON_VERSION = "3.4"
-- provider: pypi
   server: https://pypi.python.org/pypi
   user: Andrew.Hawker
   password:
