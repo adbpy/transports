@@ -6,6 +6,6 @@
 
 bumpversion==0.5.3
 isort==4.3.4
-mypy==0.600
+mypy==0.620
 pydocstyle==2.1.1
-pylint==1.9.1
+pylint==2.0.1
