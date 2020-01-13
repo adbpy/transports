@@ -4,7 +4,7 @@
 
 -r dev.txt
 
-coverage==5.0.2
+coverage==5.0.3
 
 pytest==5.3.2
 pytest-benchmark==3.2.2
