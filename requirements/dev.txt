@@ -7,5 +7,5 @@
 bumpversion==0.6.0
 isort==5.0.7
 mypy==0.782
-pydocstyle==5.0.2
+pydocstyle==5.1.0
 pylint==2.5.3
