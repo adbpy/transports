@@ -1,0 +1,6 @@
+# adbts/requirements/build.txt
+#
+# Requirements necessary to build the adbts package.
+
+pipenv==2020.8.13
+setuptools==49.6.0

@@ -2,5 +2,7 @@
 #
 # Requirements for using this package.
 
-typing==3.6.6; python_version < '3.6'
+-r build.txt
+
+typing==3.7.4.3; python_version < '3.6'
 libusb1==1.8
