@@ -1,9 +1,10 @@
 sudo: required
 language: python
 python:
-- '3.4'
 - '3.5'
 - '3.6'
+- '3.7'
+- '3.8'
 - nightly
 addons:
   apt:
@@ -23,7 +24,7 @@ deploy:
   on:
     branch: master
     tags: true
-    condition: $TRAVIS_PYTHON_VERSION = "3.4"
+    condition: $TRAVIS_PYTHON_VERSION = "3.7"
 notifications:
   slack:
     secure: aYSNYckWoJK0WW2BDYt2CmVOuF7Uwj+6zQlhM7ABV5u0QaQkUkZX4qaG1iLJ1REJDWAO+WHqx/buo3XfPUCrRtoLnRxb49IkEvfxzGisD34aeR/xPEKVz9JGLgBZrOchGHa8gSVQB737pguqdGGwgV5woZgPt35KhaMrCDMz2WgSnameyLDhyT/fvPnSUwc39iMEwt25aHQTEAeYW7huDhMELEZbtbjUeY21r8yqnmIB31wMISGSqfl6uahBhKuGsUpkKmaA7iz5FapiqTxZ3dKerwEJNPe12rR3i2kG29x9UxSFpYtUYmBuCWUIkw3EIi4aDVFk9kJUSGKYFn1WheEvIxxS678ldJvT02KetqVOefAV06iHjHN28tLnp+t7KrEDeobNq3hT6LDH5kXC3hiu08yjZoYc0AnqgReV9mojYxQIW/TyoRr1S86EkbCPcz6NL/UfIUNsd0pgp7Tk/XualaK5AFaxOPfmhvsIvXIYvcRpJ5G+K9CrebsO8KYa6RRBkl0DVW9YYqNKT64chsqPqJbzfuJBYwy2JGfRJxmhgz25cIjUD+qaULFOdisoExSmeuIuo5doPqVpm8+9gTKPTSKoamsFpsIzbLZxlP0QQKaN2nd8Gf57yfiCQXqnYx5kMCe6WCq3gfiFG+NEoMCOvt8ju3SiYHmbZFMUfL0=
