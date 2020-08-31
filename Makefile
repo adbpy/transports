@@ -30,7 +30,7 @@ travis-before-script: travis-install  ## Entry point for travis-ci.org 'before_s
 	@chmod +x ./codecov
 
 .PHONY: travis-script
-travis-script: travis-install tox lint  ## Entry point for travis-ci.org execution.
+travis-script: travis-install tox  ## Entry point for travis-ci.org execution.
 
 .PHONY: travis-after-success
 travis-after-success:  ## Entry point for travis-ci.org 'after_success' execution.
@@ -50,6 +50,14 @@ codeclimate:  ## Run codeclimate analysis.
 isort:  ## Run isort on the package.
 	@isort --recursive --check-only adbts tests
 
+.PHONY: scan
+scan:  ## Run security scan against package dependencies.
+	@safety check
+
+.PHONY: seclint
+seclint:  ## Run Python security linter 'bandit' on package.
+	@bandit -v -r transports
+
 .PHONY: mypy
 mypy:  ## Run mypy static analysis checks on the package.
 	@mypy adbts
@@ -60,12 +68,10 @@ pydocstyle:  ## Run pydocstyle on the package
 
 .PHONY: pylint
 pylint:  ## Run pylint on the package.
-ifneq (${TRAVIS_PYTHON_VERSION},nightly)
 	@pylint --rcfile .pylintrc adbts
-endif
 
 .PHONY: lint
-lint:  pylint mypy isort  ## Run mypy, pylint, and isort on the package.
+lint:  pylint mypy seclint isort  ## Run mypy, pylint, seclint and isort on the package.
 
 .PHONY: bump-patch
 bump-patch:  ## Bump package patch version, e.g. 0.0.1 -> 0.0.2.
