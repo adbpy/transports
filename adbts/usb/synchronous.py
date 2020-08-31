@@ -1,6 +1,6 @@
 """
-    adbts.usb.sync
-    ~~~~~~~~~~~~~~
+    adbts.usb.synchronous
+    ~~~~~~~~~~~~~~~~~~~~~
 
     Contains functionality for synchronous Universal Serial Bus (USB) transport.
 """

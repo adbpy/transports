@@ -13,6 +13,6 @@ from .. import timeouts
 usb_timeout = functools.partial(timeouts.timeout, default=0)  # pylint: disable=invalid-name
 
 
-from . import async, sync  # noqa pylint: disable=wrong-import-position
+from . import asynchronous, synchronous  # noqa pylint: disable=wrong-import-position
 
-__all__ = ['sync', 'async']
+__all__ = ['asynchronous', 'synchronous']

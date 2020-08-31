@@ -1,10 +1,11 @@
 """
-    adbts.tcp.async
-    ~~~~~~~~~~~~~~~
+    adbts.tcp.synchronous
+    ~~~~~~~~~~~~~~~~~~~~~
 
-    Contains functionality for asynchronous Transmission Control Protocol (TCP) transport using `asyncio`.
+    Contains functionality for synchronous Transmission Control Protocol (TCP) transport.
 """
-import asyncio
+import contextlib
+import socket
 
 from . import tcp_timeout
 from .. import exceptions, hints, timeouts, transport
@@ -12,21 +13,35 @@ from .. import exceptions, hints, timeouts, transport
 __all__ = ['Transport']
 
 
-# Disable incorrect warning on asyncio.wait_for, https://github.com/PyCQA/pylint/issues/996.
-# pylint: disable=not-an-iterable
+@contextlib.contextmanager
+def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout = timeouts.UNDEFINED):
+    """
+    Patches the socket timeout for the scope of the context manager.
+
+    :param sock: Socket to set the timeout on
+    :type sock: :class:`~socket.socket`
+    :param timeout: Socket timeout in milliseconds
+    :type timeout: :class:`~int`
+    """
+    current_timeout = sock.gettimeout()
+    sock.settimeout(timeout)
+    try:
+        yield
+    finally:
+        sock.settimeout(current_timeout)
+
 
 class Transport(transport.Transport):
     """
-    Defines asynchronous (non-blocking) TCP transport using `asyncio`.
+    Defines synchronous (blocking) TCP transport.
+
+    .. note:: This transport is not thread-safe.
     """
 
-    def __init__(self, host: hints.Str, port: hints.Int, reader: hints.StreamReader,
-                 writer: hints.StreamWriter, loop: hints.EventLoop) -> None:
+    def __init__(self, host: hints.Str, port: hints.Int, sock: hints.Socket) -> None:
         self._host = host
         self._port = port
-        self._reader = reader
-        self._writer = writer
-        self._loop = loop
+        self._socket = sock
 
     def __repr__(self):
         return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, str(self),
@@ -43,13 +58,12 @@ class Transport(transport.Transport):
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._reader is None or self._writer is None
+        return self._socket is None or self._socket._closed  # pylint: disable=protected-access
 
-    @asyncio.coroutine
     @transport.ensure_opened
     @transport.ensure_num_bytes
     @exceptions.reraise(OSError)
-    @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
+    @exceptions.reraise_timeout_errors(socket.timeout)
     def read(self, num_bytes: hints.Int,
              timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
@@ -64,16 +78,13 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        data = yield from asyncio.wait_for(self._reader.read(num_bytes),
-                                           timeout=tcp_timeout(timeout),
-                                           loop=self._loop)
-        return data
+        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
+            return self._socket.recv(num_bytes)
 
-    @asyncio.coroutine
     @transport.ensure_opened
     @transport.ensure_data
     @exceptions.reraise(OSError)
-    @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
+    @exceptions.reraise_timeout_errors(socket.timeout)
     def write(self, data: hints.Buffer,
               timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
@@ -84,13 +95,13 @@ class Transport(transport.Transport):
         :param timeout: Maximum number of milliseconds to write before raising an exception.
         :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
         :return Nothing
-        :return: :class:`~NoneType`
-        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error.
+        :rtype: :class:`~NoneType`
+        :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        self._writer.write(data)
-        yield from asyncio.wait_for(self._writer.drain(), timeout=tcp_timeout(timeout), loop=self._loop)
-        return None
+        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
+            self._socket.sendall(data)
+            return None
 
     @transport.ensure_opened
     @exceptions.reraise(OSError)
@@ -102,31 +113,27 @@ class Transport(transport.Transport):
         :rtype: `None`
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
-        self._writer.close()
-        self._writer = None
-        self._reader = None
+        self._socket.close()
+        self._socket = None
 
 
-@asyncio.coroutine
 @exceptions.reraise(OSError)
+@exceptions.reraise_timeout_errors(socket.timeout)
 def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
-         timeout: hints.Timeout = timeouts.UNDEFINED,
-         loop: hints.EventLoop = None) -> transport.TransportOpenResult:
+         timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportOpenResult:
     """
-    Open a new :class:`~adbts.tcp.async.Transport` transport to the given host/port.
+    Open a new :class:`~adbts.tcp.sync.Transport` transport to the given host/port.
 
     :param host: Remote host
     :type host: :class:`~str`
     :param port: Remote port
     :type port: :class:`~int`
-    :param timeout: Maximum number of milliseconds to write before raising an exception.
+    :param timeout: Maximum number of milliseconds on blocking socket operations before raising an exception
     :type timeout: :class:`~int`, :class:`~NoneType`, or :class:`~object`
-    :param loop: Asyncio Event Loop
-    :type loop: :class:`~asyncio.events.AbstractEventLoop`
-    :return: Asynchronous TCP transport
-    :rtype: :class:`~adbts.tcp.async.Transport`
+    :return: Synchronous TCP transport
+    :rtype: :class:`~adbts.tcp.sync.Transport`
     :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
+    :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
     """
-    reader, writer = yield from asyncio.wait_for(asyncio.open_connection(host, port, loop=loop),
-                                                 timeout=tcp_timeout(timeout), loop=loop)
-    return Transport(host, port, reader, writer, loop)
+    sock = socket.create_connection((host, port), tcp_timeout(timeout))
+    return Transport(host, port, sock)
