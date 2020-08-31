@@ -1,4 +1,5 @@
-sudo: required
+dist: xenial
+os: linux
 language: python
 python:
 - '3.5'
@@ -6,7 +7,7 @@ python:
 - '3.7'
 - '3.8'
 - nightly
-matrix:
+jobs:
   allow_failures:
   - python: nightly
   include:
@@ -25,11 +26,10 @@ after_success: make travis-after-success
 deploy:
 - provider: pypi
   server: https://pypi.python.org/pypi
-  user: Andrew.Hawker
+  username: Andrew.Hawker
   password:
     secure: AV1sFa9AzTDt3FWaOqX6KhFJbRd2NAwr94D3fVDvEd9aNoYDpK+QzzZ7TapT3YntIZLaH3IE3YCwzcEp26ozJ2cNKPVr9kop55hRuUNny+Y7BwfYe6yWwUegAckjUsdsvww60PRRnutyvSTWPm91jRmRJyJmpeA8Qp9oyOX1ymB/Xq2j5YuBYG1gyX/HxF/hxrwcdCmZOyc3yA2ssfDmWhu+e1vx5af+zXsNj4UeFBwiRsHUanPdLwI5qPGbfzuld34xJCjgNhAxxN1ic1Hqgp0sRu/FLB7WcaDqrVmAlSRwT/Zj4Mi+JhFMo3PWCKbtUv8/xPSvEkAxF5hSOJ8bz+GIm5+nQ5V9vnBkefgJRBzQX/6/cbFczOHmHypyAT0uodzehYaqZeijPMxk60ABZYiaUp81QX75EdDnFpWHcehyQiWAFpPROUXkEUopYhFzbv2op420F+bynoYwBp+pIDWH/5QCKmprtEVgQ/1f2/uaIIMibLlGZWD1mAG/Z7Au4HaaKTQu63VyXoRtzEN5NHMTbui+x2s/ZOrWoWWtnHPNt3k+eyJ1H+RxRn7qmT76Fh+weciik9BjOh70P8y6EDNyknSuxT5UiEMII8j0EOAiPXmgxq8R5B9p2bJ7+JMX3hoCGsohqHGjvxaBgRHKL247FmuU2mU1k92m1syztbo=
   distributions: sdist bdist_wheel
-  skip_cleanup: true
   on:
     branch: master
     tags: true
@@ -40,5 +40,5 @@ notifications:
 env:
   global:
   - VIRTUALENV_NO_DOWNLOAD=1
-  matrix:
+  jobs:
   - secure: POOp8WlAqz06EPznORJtrRPA5fNpe3yb3UGLFKRHxhptOxyrIaggVjpWLQnQr5YAMu8oTNiUkbyapUgsOx/6H+3lM6k/PJjza90jqPvB1gaSCVN2SpylYfM4IgxyQc6RoELjoun2tRmpf/lsDq7wrgo/OMKfR6LKLEyU3P1r2U6IUMHSt88//JL7jded5UN34pwXGlfOV7GP+hihUY/9ZtUAjprLJ7MdHO4BpdVG4ueST50sQ1Xn7VPcg8fhcjvzGtYIivBMy/6ll5ouah+PeuM1X9BTiDz+Fb1wVW2Zxh/XUAVeEbbdZ/MW1WAkmwqVInh8N2WxKrMSVSjPl26rDxIBidkOgwUK5GWXlbUnEq7NVWkeZvj4PwBxNEWbVYbbkj5JEReWawVXXLr2mLWrBM4tQ6Xziua66dT/QYubKUrVr0Pfyg7lu2weYtJ1AOk/mUEgfDfPEIfinvAG4Eg0LjU8ktt+fUP9JuNUpIr6WZH3lsrSp9hfqKXUfd9Znpf2uSNZMDxWAwd5mVIbFjn/+jefPdkqyh3e47Lsbjdad8JDF00D0PWJ/QgGTA77L5tFCb/kY3k9R7dE/Kg0+XBs/LT3H6OjINImoK6P5rIIQTeFFcbJuxYgHYKR83lRHK9GT1un2wb3YzqrbwAyMy2dXFxgn3sscNGYlmCbBitaoSs=
