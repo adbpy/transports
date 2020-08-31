@@ -26,15 +26,15 @@ travis-install:  ## Install dependencies for travis-ci.org integration.
 
 .PHONY: travis-before-script
 travis-before-script: travis-install  ## Entry point for travis-ci.org 'before_script' execution.
-	@curl -v https://codecov.io/bash > ./codecov
-	@chmod +x ./codecov
+	@test -f $$HOME/.cache/codecov/codecov || curl -v https://codecov.io/bash > $$HOME/.cache/codecov/codecov
+	@chmod +x $$HOME/.cache/codecov/codecov
 
 .PHONY: travis-script
 travis-script: travis-install tox  ## Entry point for travis-ci.org execution.
 
 .PHONY: travis-after-success
 travis-after-success:  ## Entry point for travis-ci.org 'after_success' execution.
-	@./codecov -e TOX_ENV
+	@$$HOME/.cache/codecov/codecov -e TOX_ENV
 
 .PHONY: codeclimate
 codeclimate:  ## Run codeclimate analysis.
