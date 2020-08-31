@@ -21,15 +21,20 @@ tox: tox-install  ## Run test suite using tox.
 	@tox
 
 .PHONY: travis-install
-travis-install: codeclimate-install  ## Install dependencies for travis-ci.org integration.
+travis-install:  ## Install dependencies for travis-ci.org integration.
 	@pip install -q -r requirements/travis.txt
+
+.PHONY: travis-before-script
+travis-before-script: travis-install  ## Entry point for travis-ci.org 'before_script' execution.
+	@curl -v https://codecov.io/bash > ./codecov
+	@chmod +x ./codecov
 
 .PHONY: travis-script
 travis-script: travis-install tox lint  ## Entry point for travis-ci.org execution.
 
-.PHONY: codeclimate-install
-codeclimate-install:  ## Install dependencies required for codeclimate.com integration.
-		@pip install -q -r requirements/codeclimate.txt
+.PHONY: travis-after-success
+travis-after-success:  ## Entry point for travis-ci.org 'after_success' execution.
+	@./codecov -e TOX_ENV
 
 .PHONY: codeclimate
 codeclimate:  ## Run codeclimate analysis.

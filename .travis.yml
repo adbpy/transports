@@ -11,8 +11,9 @@ addons:
     packages:
       - libusb-1.0-0-dev
 install: make travis-install
+before_script: make travis-before-script
 script: make travis-script
-after_success: codeclimate-test-reporter
+after_success: make travis-after-success
 deploy:
 - provider: pypi
   server: https://pypi.python.org/pypi
