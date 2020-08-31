@@ -86,15 +86,14 @@ def reraise_libusb_errors(func: hints.Callable):
             if ex.value == usb1.ERROR_NO_DEVICE:  # pylint: disable=no-member
                 raise exceptions.TransportEndpointNotFound(
                     'Device not found or has been disconnected') from ex
-            elif ex.value == usb1.ERROR_ACCESS:  # pylint: disable=no-member
+            if ex.value == usb1.ERROR_ACCESS:  # pylint: disable=no-member
                 raise exceptions.TransportAccessDenied(
                     'Insufficient permissions or interface already claimed') from ex
-            elif ex.value == usb1.ERROR_TIMEOUT:  # pylint: disable=no-member
+            if ex.value == usb1.ERROR_TIMEOUT:  # pylint: disable=no-member
                 raise exceptions.TransportTimeoutError(
                     'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from ex
-            else:
-                raise exceptions.TransportError(
-                    'Unhandled USB transport error {}'.format(getattr(ex, '__name__', str(ex)))) from ex
+            raise exceptions.TransportError(
+                'Unhandled USB transport error {}'.format(getattr(ex, '__name__', str(ex)))) from ex
 
     return decorator
 
