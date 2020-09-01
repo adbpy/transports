@@ -34,6 +34,8 @@ setup(
     description='Android Debug Bridge (ADB) Transports',
     long_description=__doc__,
     packages=['adbts'],
+    python_requires='>=3.5',
+    install_requires=['libusb1>=1.8'],
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
