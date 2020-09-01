@@ -6,8 +6,8 @@
 """
 import asyncio
 
-from . import tcp_timeout
-from .. import exceptions, hints, timeouts, transport
+from . import timeouts
+from .. import exceptions, hints, transport
 
 __all__ = ['Transport']
 
@@ -65,7 +65,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         data = yield from asyncio.wait_for(self._reader.read(num_bytes),
-                                           timeout=tcp_timeout(timeout),
+                                           timeout=timeouts.timeout(timeout),
                                            loop=self._loop)
         return data
 
@@ -89,7 +89,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
         self._writer.write(data)
-        yield from asyncio.wait_for(self._writer.drain(), timeout=tcp_timeout(timeout), loop=self._loop)
+        yield from asyncio.wait_for(self._writer.drain(), timeout=timeouts.timeout(timeout), loop=self._loop)
 
     @transport.ensure_opened
     @exceptions.reraise(OSError)
@@ -127,5 +127,5 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
     """
     reader, writer = yield from asyncio.wait_for(asyncio.open_connection(host, port, loop=loop),
-                                                 timeout=tcp_timeout(timeout), loop=loop)
+                                                 timeout=timeouts.timeout(timeout), loop=loop)
     return Transport(host, port, reader, writer, loop)

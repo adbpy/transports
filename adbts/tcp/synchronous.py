@@ -7,8 +7,8 @@
 import contextlib
 import socket
 
-from . import tcp_timeout
-from .. import exceptions, hints, timeouts, transport
+from . import timeouts
+from .. import exceptions, hints, transport
 
 __all__ = ['Transport']
 
@@ -78,7 +78,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
+        with socket_timeout_scope(self._socket, timeouts.timeout(timeout)):
             return self._socket.recv(num_bytes)
 
     @transport.ensure_opened
@@ -99,7 +99,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        with socket_timeout_scope(self._socket, tcp_timeout(timeout)):
+        with socket_timeout_scope(self._socket, timeouts.timeout(timeout)):
             self._socket.sendall(data)
             return None
 
@@ -135,5 +135,5 @@ def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
     :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
     :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
     """
-    sock = socket.create_connection((host, port), tcp_timeout(timeout))
+    sock = socket.create_connection((host, port), timeouts.timeout(timeout))
     return Transport(host, port, sock)

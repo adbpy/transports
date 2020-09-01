@@ -4,8 +4,8 @@
 
     Contains functionality for synchronous Universal Serial Bus (USB) transport.
 """
-from . import usb_timeout, libusb
-from .. import ctxlib, exceptions, hints, timeouts, transport
+from . import timeouts, libusb
+from .. import ctxlib, exceptions, hints, transport
 
 __all__ = ['Transport']
 
@@ -66,7 +66,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        return libusb.read(self._handle, self._read_endpoint, num_bytes, usb_timeout(timeout))
+        return libusb.read(self._handle, self._read_endpoint, num_bytes, timeouts.timeout(timeout))
 
     @transport.ensure_opened
     @transport.ensure_data
@@ -85,7 +85,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        return libusb.write(self._handle, self._write_endpoint, data, usb_timeout(timeout))
+        return libusb.write(self._handle, self._write_endpoint, data, timeouts.timeout(timeout))
 
     @transport.ensure_opened
     @libusb.reraise_libusb_errors
