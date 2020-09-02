@@ -24,7 +24,7 @@ def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout = timeouts.U
     :type timeout: :class:`~int`
     """
     current_timeout = sock.gettimeout()
-    sock.settimeout(timeout)
+    sock.settimeout(timeouts.timeout(timeout))
     try:
         yield
     finally:
@@ -42,6 +42,7 @@ class Transport(transport.Transport):
         self._host = host
         self._port = port
         self._socket = sock
+        self._closed = False
 
     def __repr__(self):
         return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, str(self),
@@ -58,7 +59,7 @@ class Transport(transport.Transport):
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._socket is None or self._socket._closed  # pylint: disable=protected-access
+        return self._closed is True
 
     @transport.ensure_opened
     @transport.ensure_num_bytes
@@ -114,7 +115,7 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         self._socket.close()
-        self._socket = None
+        self._closed = True
 
 
 @exceptions.reraise(OSError)

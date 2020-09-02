@@ -20,6 +20,10 @@ Context = usb1.USBContext  # pylint: disable=invalid-name
 Device = usb1.USBDevice  # pylint: disable=invalid-name
 
 
+#: Type hint alias for an optional libusb :class:`~usb1.USBDevice`.
+OptionalDevice = typing.Optional[usb1.USBDevice]  # pylint: disable=invalid-name
+
+
 #: Type hint for a USB device class.
 DeviceClass = typing.Optional[hints.Int]  # pylint: disable=invalid-name
 
@@ -32,12 +36,28 @@ DeviceList = typing.List[Device]  # pylint: disable=invalid-name
 Endpoint = usb1.USBEndpoint  # pylint: disable=invalid-name
 
 
+#: Type hint for a generator that yields USB device endpoint.
+EndpointGenerator = typing.Generator[usb1.USBEndpoint, None, None]  # pylint: disable=invalid-name
+
+
+#: Type hint for an optional USB device endpoint.
+OptionalEndpoint = typing.Optional[Endpoint]  # pylint: disable=invalid-name
+
+
 #: Type hint alias for libusb :class:`~usb1.USBDeviceHandle`.
 Handle = usb1.USBDeviceHandle  # pylint: disable=invalid-name
 
 
-#: Type hint for USB device interface settings.
+#: Type hint alias for an optional libusb :class:`~usb1.USBDeviceHandle`.
+OptionalHandle = typing.Optional[usb1.USBDeviceHandle]  # pylint: disable=invalid-name
+
+
+#: Type hint for device interface settings.
 InterfaceSettings = usb1.USBInterfaceSetting  # pylint: disable=invalid-name
+
+
+#: Type hint for optional device interface settings.
+OptionalInterfaceSettings = typing.Optional[usb1.USBInterfaceSetting]  # pylint: disable=invalid-name
 
 
 #: Type hint for USB context that is optional.
@@ -48,12 +68,34 @@ OptionalContext = typing.Optional[Context]  # pylint: disable=invalid-name
 ProductId = typing.Optional[hints.Int]  # pylint: disable=invalid-name
 
 
+#: Type hint for context manager that releases an interface.
+# pylint: disable=invalid-name, protected-access
+ReleaseInterfaceContextManager = typing.ContextManager[usb1._ReleaseInterface]
+# pylint: enable=invalid-name, protected-access
+
+
 #: Type hint for a USB serial number.
 SerialNumber = typing.Optional[hints.Str]  # pylint: disable=invalid-name
 
 
 #: Type hint for a USB vendor id.
 VendorId = typing.Optional[hints.Int]  # pylint: disable=invalid-name
+
+
+#: Type hint for an two-item tuple of USB device and settings.
+DeviceAndInterfaceSettings = typing.Tuple[Device, InterfaceSettings]  # pylint: disable=invalid-name
+
+
+#: Type hint for a generator function that yields device and interface settings.
+# pylint: disable=invalid-name
+DeviceAndInterfaceSettingsGenerator = typing.Generator[DeviceAndInterfaceSettings, None, None]
+# pylint: enable=redefined-outer-name
+
+
+#: Type hint for an optional two-item tuple of USB device and settings.
+# pylint: disable=invalid-name
+OptionalDeviceAndInterfaceSettings = typing.Union[DeviceAndInterfaceSettings, typing.Tuple[None, None]]
+# pylint: enable=redefined-outer-name
 
 
 #: USB device class supported by ADB (vendor specific).
@@ -98,7 +140,10 @@ def reraise_libusb_errors(func: hints.Callable):
     return decorator
 
 
-def read(handle: Handle, endpoint: Endpoint, num_bytes: hints.Int, timeout: hints.Int) -> hints.Buffer:
+def read(handle: Handle,
+         endpoint: Endpoint,
+         num_bytes: hints.Int,
+         timeout: hints.Int) -> hints.Buffer:
     """
     Ready bytes from a USB device endpoint.
 
@@ -120,7 +165,10 @@ def read(handle: Handle, endpoint: Endpoint, num_bytes: hints.Int, timeout: hint
     return handle.bulkRead(endpoint.getAddress(), num_bytes, timeout)
 
 
-def write(handle: Handle, endpoint: Endpoint, data: hints.Buffer, timeout: hints.Int) -> None:
+def write(handle: Handle,  # pylint: disable=useless-return
+          endpoint: Endpoint,
+          data: hints.Buffer,
+          timeout: hints.Int) -> None:
     """
     Write bytes to a USB device endpoint.
 
@@ -144,9 +192,12 @@ def write(handle: Handle, endpoint: Endpoint, data: hints.Buffer, timeout: hints
     if num_bytes != len(data):
         raise exceptions.TransportError(
             'Only wrote {} bytes when expected {} bytes'.format(num_bytes, len(data)))
+    return None
 
 
-def close(context: Context, handle: Handle, interface_settings: InterfaceSettings) -> None:
+def close(context: Context,
+          handle: Handle,
+          interface_settings: InterfaceSettings) -> None:
     """
     Close connection to USB device.
 
@@ -186,7 +237,8 @@ def open_device_handle(device: Device) -> Handle:
     return device.open()
 
 
-def claim_interface(handle, interface_settings):
+def claim_interface(handle: Handle,
+                    interface_settings: InterfaceSettings) -> ReleaseInterfaceContextManager:
     """
     Claim the interface represented by the settings on the given device handle.
 
@@ -206,11 +258,14 @@ def claim_interface(handle, interface_settings):
         handle.detachKernelDriver(interface)
 
     # Claim the USB device interface so we can read/write to its endpoints.
-    handle.claimInterface(interface)
+    return handle.claimInterface(interface)
 
 
-def find_device(serial: SerialNumber = None, vid: VendorId = None, pid: ProductId = None,
-                context: OptionalContext = None, skip_on_error: hints.Bool = True) -> Device:
+def find_device(serial: SerialNumber = None,
+                vid: VendorId = None,
+                pid: ProductId = None,
+                context: OptionalContext = None,
+                skip_on_error: hints.Bool = True) -> OptionalDeviceAndInterfaceSettings:
     """
     Find a local USB device.
 
@@ -230,8 +285,11 @@ def find_device(serial: SerialNumber = None, vid: VendorId = None, pid: ProductI
     return next(find_devices_generator(serial, vid, pid, context, skip_on_error), (None, None))
 
 
-def find_devices_generator(serial: SerialNumber = None, vid: VendorId = None, pid: ProductId = None,
-                           context: OptionalContext = None, skip_on_error: hints.Bool = True) -> DeviceList:
+def find_devices_generator(serial: SerialNumber = None,
+                           vid: VendorId = None,
+                           pid: ProductId = None,
+                           context: OptionalContext = None,
+                           skip_on_error: hints.Bool = True) -> DeviceAndInterfaceSettingsGenerator:
     """
     Generator function that yields local USB devices.
 
@@ -254,7 +312,7 @@ def find_devices_generator(serial: SerialNumber = None, vid: VendorId = None, pi
 
 
 def find_devices_interfaces_generator(context: OptionalContext = None,  # pylint: disable=invalid-name
-                                      skip_on_error: hints.Bool = True) -> DeviceList:
+                                      skip_on_error: hints.Bool = True) -> DeviceAndInterfaceSettingsGenerator:
     """
     Generator function that yields combinations of all USB devices with settings
     for all of their interfaces.
@@ -272,8 +330,11 @@ def find_devices_interfaces_generator(context: OptionalContext = None,  # pylint
                 yield device, settings
 
 
-def device_matches(device: Device, settings: InterfaceSettings,
-                   serial: SerialNumber = None, vid: VendorId = None, pid: ProductId = None) -> hints.Bool:
+def device_matches(device: Device,
+                   settings: InterfaceSettings,
+                   serial: SerialNumber = None,
+                   vid: VendorId = None,
+                   pid: ProductId = None) -> hints.Bool:
     """
     Check if given device and interface settings matches filter.
 
@@ -300,7 +361,7 @@ def device_matches(device: Device, settings: InterfaceSettings,
 
 
 @contextlib.contextmanager
-def optional_usb_context(context: OptionalContext = None) -> typing.Callable:
+def optional_usb_context(context: OptionalContext = None) -> typing.Generator[Context, None, None]:
     """
     Context manager that uses or creates a USB context for the duration of the block.
 
@@ -317,7 +378,7 @@ def optional_usb_context(context: OptionalContext = None) -> typing.Callable:
             ctx.close()
 
 
-def find_read_endpoint(settings: InterfaceSettings) -> Endpoint:
+def find_read_endpoint(settings: InterfaceSettings) -> OptionalEndpoint:
     """
     Find read endpoint for given USB interface settings.
 
@@ -329,7 +390,7 @@ def find_read_endpoint(settings: InterfaceSettings) -> Endpoint:
     return next(read_endpoints_generator(settings), None)
 
 
-def find_write_endpoint(settings: InterfaceSettings) -> Endpoint:
+def find_write_endpoint(settings: InterfaceSettings) -> OptionalEndpoint:
     """
     Find write endpoint for given USB interface settings.
 
@@ -341,7 +402,7 @@ def find_write_endpoint(settings: InterfaceSettings) -> Endpoint:
     return next(write_endpoints_generator(settings), None)
 
 
-def read_endpoints_generator(settings):
+def read_endpoints_generator(settings: InterfaceSettings) -> EndpointGenerator:
     """
     Generator function that yields all endpoints capable of reading.
 
@@ -355,7 +416,7 @@ def read_endpoints_generator(settings):
                 if is_read_endpoint(endpoint))
 
 
-def write_endpoints_generator(settings):
+def write_endpoints_generator(settings: InterfaceSettings) -> EndpointGenerator:
     """
     Generator function that yields all endpoints capable of writing.
 
@@ -369,7 +430,7 @@ def write_endpoints_generator(settings):
                 if is_write_endpoint(endpoint))
 
 
-def is_read_endpoint(endpoint):
+def is_read_endpoint(endpoint: Endpoint) -> hints.Bool:
     """
     Predicate function that determines if the given endpoint is capable of reading.
 
@@ -381,7 +442,7 @@ def is_read_endpoint(endpoint):
     return endpoint.getAddress() & USB_ENDPOINT_DIRECTION_IN == USB_ENDPOINT_DIRECTION_IN
 
 
-def is_write_endpoint(endpoint):
+def is_write_endpoint(endpoint: Endpoint) -> hints.Bool:
     """
     Predicate function that determines if the given endpoint is capable of writing.
 

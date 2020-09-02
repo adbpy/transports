@@ -20,13 +20,18 @@ class Transport(transport.Transport):
     Defines asynchronous (non-blocking) TCP transport using `asyncio`.
     """
 
-    def __init__(self, host: hints.Str, port: hints.Int, reader: hints.StreamReader,
-                 writer: hints.StreamWriter, loop: hints.EventLoop) -> None:
+    def __init__(self,
+                 host: hints.Str,
+                 port: hints.Int,
+                 reader: hints.StreamReader,
+                 writer: hints.StreamWriter,
+                 loop: hints.OptionalEventLoop = None) -> None:
         self._host = host
         self._port = port
         self._reader = reader
         self._writer = writer
         self._loop = loop
+        self._closed = False
 
     def __repr__(self):
         return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, str(self),
@@ -43,14 +48,15 @@ class Transport(transport.Transport):
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._reader is None or self._writer is None
+        return self._closed is True
 
     @asyncio.coroutine
     @transport.ensure_opened
     @transport.ensure_num_bytes
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
-    def read(self, num_bytes: hints.Int,
+    def read(self,
+             num_bytes: hints.Int,
              timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
@@ -74,7 +80,8 @@ class Transport(transport.Transport):
     @transport.ensure_data
     @exceptions.reraise(OSError)
     @exceptions.reraise_timeout_errors(asyncio.TimeoutError)
-    def write(self, data: hints.Buffer,
+    def write(self,
+              data: hints.Buffer,
               timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
@@ -102,15 +109,15 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         self._writer.close()
-        self._writer = None
-        self._reader = None
+        self._closed = True
 
 
 @asyncio.coroutine
 @exceptions.reraise(OSError)
-def open(host: hints.Str, port: hints.Int,  # pylint: disable=redefined-builtin
+def open(host: hints.Str,  # pylint: disable=redefined-builtin
+         port: hints.Int,
          timeout: hints.Timeout = timeouts.UNDEFINED,
-         loop: hints.EventLoop = None) -> transport.TransportOpenResult:
+         loop: hints.OptionalEventLoop = None) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbts.tcp.async.Transport` transport to the given host/port.
 

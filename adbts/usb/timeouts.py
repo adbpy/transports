@@ -4,12 +4,21 @@
 
     Contains timeouts for USB transports.
 """
-import functools
+from .. import hints, timeouts
 
-from .. import timeouts
-
-#: Sentinel value indicating a timeout was not given. Equal to :attr:`~adbts.timeouts.UNDEFINED`.
+# Exports from wrapped timeouts module so caller doesn't need to import both.
 UNDEFINED = timeouts.UNDEFINED
 
-#: Function partial that sets the default USB transport operation timeout to zero milliseconds.
-timeout = functools.partial(timeouts.timeout, default=0)  # pylint: disable=invalid-name
+
+def timeout(value: hints.Timeout) -> hints.Int:
+    """
+    Determine the timeout value in milliseconds to use for a USB transport operation.
+
+    :param value: Timeout value given
+    :type value: :class:`~int`, :class:`~float`, :class:`~NoneType`
+    :return: Operation timeout in milliseconds
+    :rtype: :class:`~int`
+    """
+    if value is None or value == UNDEFINED:
+        return 0
+    return int(value)

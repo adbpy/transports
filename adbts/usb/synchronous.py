@@ -15,10 +15,16 @@ class Transport(transport.Transport):
     Defines synchronous (blocking) USB transport.
     """
 
-    def __init__(self, serial: libusb.SerialNumber, vid: libusb.VendorId,
-                 pid: libusb.ProductId, context: libusb.Context, device: libusb.Device,
-                 handle: libusb.Handle, interface_settings: libusb.InterfaceSettings,
-                 read_endpoint: libusb.Endpoint, write_endpoint: libusb.Endpoint) -> None:
+    def __init__(self,
+                 serial: libusb.SerialNumber,
+                 vid: libusb.VendorId,
+                 pid: libusb.ProductId,
+                 context: libusb.Context,
+                 device: libusb.Device,
+                 handle: libusb.Handle,
+                 interface_settings: libusb.InterfaceSettings,
+                 read_endpoint: libusb.Endpoint,
+                 write_endpoint: libusb.Endpoint) -> None:
         self._serial = serial
         self._vid = vid
         self._pid = pid
@@ -28,6 +34,7 @@ class Transport(transport.Transport):
         self._interface_settings = interface_settings
         self._read_endpoint = read_endpoint
         self._write_endpoint = write_endpoint
+        self._closed = False
 
     def __repr__(self):
         return '<{}({}, state={!r})>'.format(self.__class__.__name__, str(self),
@@ -47,12 +54,13 @@ class Transport(transport.Transport):
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._context is None
+        return self._context is True
 
     @transport.ensure_opened
     @transport.ensure_num_bytes
     @libusb.reraise_libusb_errors
-    def read(self, num_bytes: hints.Int,
+    def read(self,
+             num_bytes: hints.Int,
              timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportReadResult:
         """
         Read bytes from the transport.
@@ -71,7 +79,8 @@ class Transport(transport.Transport):
     @transport.ensure_opened
     @transport.ensure_data
     @libusb.reraise_libusb_errors
-    def write(self, data: hints.Buffer,
+    def write(self,  # pylint: disable=useless-return
+              data: hints.Buffer,
               timeout: hints.Timeout = timeouts.UNDEFINED) -> transport.TransportWriteResult:
         """
         Write bytes to the transport.
@@ -85,7 +94,8 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         :raises :class:`~adbts.exceptions.TimeoutError`: When timeout is exceeded
         """
-        return libusb.write(self._handle, self._write_endpoint, data, timeouts.timeout(timeout))
+        libusb.write(self._handle, self._write_endpoint, data, timeouts.timeout(timeout))
+        return None
 
     @transport.ensure_opened
     @libusb.reraise_libusb_errors
@@ -98,16 +108,12 @@ class Transport(transport.Transport):
         :raises :class:`~adbts.exceptions.TransportError`: When underlying transport encounters an error
         """
         libusb.close(self._context, self._handle, self._interface_settings)
-        self._context = None
-        self._device = None
-        self._handle = None
-        self._interface_settings = None
-        self._read_endpoint = None
-        self._write_endpoint = None
+        self._closed = True
 
 
 @libusb.reraise_libusb_errors
-def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pylint: disable=redefined-builtin
+def open(serial: libusb.SerialNumber = None,  # pylint: disable=redefined-builtin
+         vid: libusb.VendorId = None,
          pid: libusb.ProductId = None) -> transport.TransportOpenResult:
     """
     Open a new :class:`~adbts.usb.sync.Transport` transport to a USB device.
@@ -147,6 +153,6 @@ def open(serial: libusb.SerialNumber = None, vid: libusb.VendorId = None,  # pyl
         with ctxlib.close_on_error(libusb.open_device_handle(device)) as handle:
             # Claim the device interface. Doing makes this USB device interface unusable to other clients
             # until it is released.
-            with ctxlib.close_on_error(libusb.claim_interface(handle, interface_settings)):
+            with libusb.claim_interface(handle, interface_settings):
                 return Transport(serial, vid, pid, context, device, handle,
                                  interface_settings, read_endpoint, write_endpoint)

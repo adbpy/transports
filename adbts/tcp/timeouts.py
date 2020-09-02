@@ -4,16 +4,25 @@
 
     Contains timeouts for TCP transports.
 """
-import functools
 import socket
 
-from .. import timeouts
+from .. import hints, timeouts
 
-#: Sentinel value indicating a timeout was not given. Equal to :attr:`~adbts.timeouts.UNDEFINED`.
+# Exports from wrapped timeouts module so caller doesn't need to import both.
 UNDEFINED = timeouts.UNDEFINED
 
-#: Function partial that sets the default transport operation timeout to the
-#: default socket timeout value and convert it from seconds to milliseconds.
-timeout = functools.partial(timeouts.timeout,  # pylint: disable=invalid-name
-                            default=socket.getdefaulttimeout(),
-                            seconds=True)
+
+def timeout(value: hints.Timeout) -> hints.OptionalFloat:
+    """
+    Determine the timeout value in seconds to use for a TCP transport operation.
+
+    :param value: Timeout value given
+    :type value: :class:`~int`, :class:`~float`, :class:`~NoneType`
+    :return: Operation timeout in milliseconds
+    :rtype: :class:`~float`
+    """
+    if value is None:
+        return value
+    if value == UNDEFINED:
+        return socket.getdefaulttimeout()
+    return float(value) // 1000
