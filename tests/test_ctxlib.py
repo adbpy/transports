@@ -4,8 +4,9 @@
 
     Tests for the :mod:`~adbts.ctxlib` module.
 """
-import pytest
 import tempfile
+
+import pytest
 
 from adbts import ctxlib
 

@@ -5,8 +5,9 @@
     High level fixtures used across multiple test modules.
 """
 import os
-import pytest
 import random
+
+import pytest
 
 
 @pytest.fixture(scope='session', params=[
