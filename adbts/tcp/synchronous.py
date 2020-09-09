@@ -7,14 +7,15 @@
 import contextlib
 import socket
 
-from . import timeouts
 from .. import exceptions, hints, transport
+from . import timeouts
 
 __all__ = ['Transport']
 
 
 @contextlib.contextmanager
-def socket_timeout_scope(sock: hints.Socket, timeout: hints.Timeout = timeouts.UNDEFINED):
+def socket_timeout_scope(sock: hints.Socket,
+                         timeout: hints.Timeout = timeouts.UNDEFINED) -> hints.Iterator[None]:
     """
     Patches the socket timeout for the scope of the context manager.
 
@@ -44,15 +45,16 @@ class Transport(transport.Transport):
         self._socket = sock
         self._closed = False
 
-    def __repr__(self):
-        return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, str(self),
-                                                       'closed' if self.closed else 'open')
+    def __repr__(self) -> hints.Str:
+        address = str(self)
+        state = 'closed' if self.closed else 'open'
+        return '<{}(address={!r}, state={!r})>'.format(self.__class__.__name__, address, state)
 
-    def __str__(self):
+    def __str__(self) -> hints.Str:
         return '{}:{}'.format(self._host, self._port)
 
     @property
-    def closed(self):
+    def closed(self) -> hints.Bool:
         """
         Checks to see if the transport is closed.
 

@@ -6,9 +6,8 @@
 """
 # pylint: disable=wildcard-import
 
-from . import exceptions
+from . import exceptions, timeouts
 from .exceptions import *
-from . import timeouts
 from .timeouts import *
 
 __all__ = exceptions.__all__ + timeouts.__all__

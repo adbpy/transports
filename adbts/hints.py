@@ -6,9 +6,13 @@
 """
 import asyncio
 import socket
+import types
 import typing
 
-# pylint: disable=invalid-name,no-member,unsubscriptable-object
+import typing_extensions
+
+# pylint: disable=invalid-name,no-member,unsubscriptable-object,invalid-sequence-index
+# pylint: disable=missing-function-docstring,too-few-public-methods,
 
 #: Type hint that is an alias for the built-in :class:`~bool` type.
 Bool = bool
@@ -27,8 +31,26 @@ BufferGenerator = typing.Generator[Buffer, None, None]
 Bytes = bytes
 
 
-#: Type hint that is an alias for :class:`~typing.Callable`.
-Callable = typing.Callable
+#: Type hints for '*args' and '**kwargs'
+Args = typing.Any
+Kwargs = typing.Any
+
+
+#: Type hints for generic decorator functions.
+DecoratorT = typing.TypeVar('DecoratorT', bound=typing.Callable[..., typing.Any])
+DecoratorFunc = typing.Callable[..., typing.Any]
+DecoratorWrapper = typing.Callable[[DecoratorT], DecoratorT]
+DecoratorReturnValue = typing.Any
+DecoratorArgsReturnValue = DecoratorWrapper[DecoratorReturnValue]
+
+
+#: Type hints for exceptions.
+ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)
+ExceptionTypes = typing.Union[typing.Type[ExceptionType], typing.Tuple[typing.Type[ExceptionType], ...]]
+
+OptionalExceptionType = typing.Optional[typing.Type[BaseException]]
+OptionalException = typing.Optional[BaseException]
+OptionalTracebackType = typing.Optional[types.TracebackType]
 
 
 #: Type that is an alias for :class:`~asyncio.events.AbstractEventLoop`.
@@ -45,6 +67,10 @@ Float = float
 
 #: Type hint that is an alias for the built-in :class:`~int` type.
 Int = int
+
+
+#: Type hint that is an alias for the :class:`~typing.Iterator.type`.
+Iterator = typing.Iterator
 
 
 #: Type hint that represents a co-routine that yields :class:`~NoneType`.
@@ -89,3 +115,14 @@ OptionalStreamReader = typing.Optional[asyncio.StreamReader]
 
 #: Type hint that is an alias for an optional :class:`~asyncio.streams.StreamWriter`.
 OptionalStreamWriter = typing.Optional[asyncio.StreamWriter]
+
+
+class HasClose(typing_extensions.Protocol):
+    """
+    Protocol for objects that have a 'close' method.
+    """
+    def close(self) -> None: ...
+
+
+#: Type hint for classes that have a 'close' method.
+Closeable = typing.TypeVar('Closeable', bound=HasClose)

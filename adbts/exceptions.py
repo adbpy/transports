@@ -5,18 +5,11 @@
     Contains exception types used across the package.
 """
 import functools
-import typing
+
+from . import hints
 
 __all__ = ['TransportError', 'TransportTimeoutError', 'TransportClosedError',
            'TransportEndpointNotFound', 'TransportAccessDenied']
-
-#: Type hint that defines a exception type that derives from :class:`~Exception`.
-ExceptionType = typing.TypeVar('ExceptionType', bound=Exception)  # pylint: disable=invalid-name
-
-#: Type hint that defines a collection of one or more exception types
-#: that can be caught/raised.
-ExceptionTypes = typing.Union[ExceptionType,  # pylint: disable=invalid-name
-                              typing.Tuple[ExceptionType, ...]]  # pylint: disable=invalid-sequence-index
 
 
 class TransportError(Exception):
@@ -49,7 +42,8 @@ class TransportAccessDenied(TransportError):
     """
 
 
-def reraise(exc_to_catch: ExceptionTypes):
+# pylint: disable=missing-docstring
+def reraise(exc_to_catch: hints.ExceptionTypes[hints.ExceptionType]) -> hints.DecoratorArgsReturnValue:
     """
     Decorator that catches specific exception types and re-raises them as
     :class:`~adbts.exceptions.TransportError`.
@@ -57,9 +51,9 @@ def reraise(exc_to_catch: ExceptionTypes):
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`
     """
-    def decorator(func):  # pylint: disable=missing-docstring
+    def decorator(func: hints.DecoratorFunc) -> hints.DecoratorReturnValue:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):  # pylint: disable=missing-docstring
+        def wrapper(*args: hints.Args, **kwargs: hints.Kwargs) -> hints.DecoratorReturnValue:
             try:
                 return func(*args, **kwargs)
             except exc_to_catch as ex:
@@ -68,16 +62,16 @@ def reraise(exc_to_catch: ExceptionTypes):
     return decorator
 
 
-def reraise_timeout_errors(exc_to_catch: ExceptionTypes):
+def reraise_timeout_errors(exc_to_catch: hints.ExceptionTypes[hints.ExceptionType]) -> hints.DecoratorArgsReturnValue:
     """
     Decorator that catches transport specific timeout related exceptions to re-raise another.
 
     :param exc_to_catch: Transport specific timeout exception type(s) to catch
     :type exc_to_catch: :class:`~Exception` or :class:`~tuple`
     """
-    def decorator(func):  # pylint: disable=missing-docstring
+    def decorator(func: hints.DecoratorFunc) -> hints.DecoratorReturnValue:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):  # pylint: disable=missing-docstring
+        def wrapper(*args: hints.Args, **kwargs: hints.Kwargs) -> hints.DecoratorReturnValue:
             try:
                 return func(*args, **kwargs)
             except exc_to_catch as ex:
@@ -85,3 +79,4 @@ def reraise_timeout_errors(exc_to_catch: ExceptionTypes):
                     'Exceeded timeout of {} ms'.format(kwargs.get('timeout', 'inf'))) from ex
         return wrapper
     return decorator
+# pylint: enable=missing-docstring

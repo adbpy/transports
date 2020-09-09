@@ -4,8 +4,8 @@
 
     Contains functionality for synchronous Universal Serial Bus (USB) transport.
 """
-from . import timeouts, libusb
 from .. import ctxlib, exceptions, hints, transport
+from . import libusb, timeouts
 
 __all__ = ['Transport']
 
@@ -36,25 +36,25 @@ class Transport(transport.Transport):
         self._write_endpoint = write_endpoint
         self._closed = False
 
-    def __repr__(self):
+    def __repr__(self) -> hints.Str:
         return '<{}({}, state={!r})>'.format(self.__class__.__name__, str(self),
                                              'closed' if self.closed else 'open')
 
-    def __str__(self):
+    def __str__(self) -> hints.Str:
         serial = 'serial={!r}'.format(self._serial or '*')
         vid = 'vid={!r}'.format(self._vid or '*')
         pid = 'pid={!r}'.format(self._pid or '*')
         return ', '.join((serial, vid, pid))
 
     @property
-    def closed(self):
+    def closed(self) -> hints.Bool:
         """
         Checks to see if the transport is closed.
 
         :return: Closed state of the transport
         :rtype: :class:`~bool`
         """
-        return self._context is True
+        return self._closed is True
 
     @transport.ensure_opened
     @transport.ensure_num_bytes

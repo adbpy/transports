@@ -7,10 +7,10 @@
 import contextlib
 import functools
 import typing
+
 import usb1
 
 from adbts import exceptions, hints
-
 
 #: Type hint alias for libusb :class:`~usb1.USBContext`.
 Context = usb1.USBContext  # pylint: disable=invalid-name
@@ -70,7 +70,7 @@ ProductId = typing.Optional[hints.Int]  # pylint: disable=invalid-name
 
 #: Type hint for context manager that releases an interface.
 # pylint: disable=invalid-name, protected-access
-ReleaseInterfaceContextManager = typing.ContextManager[usb1._ReleaseInterface]
+ReleaseInterfaceContextManager = usb1._ReleaseInterface
 # pylint: enable=invalid-name, protected-access
 
 
@@ -114,14 +114,16 @@ USB_DEVICE_PROTOCOL = 0x1
 USB_ENDPOINT_DIRECTION_IN = 0x80
 
 
-def reraise_libusb_errors(func: hints.Callable):
+def reraise_libusb_errors(func: hints.DecoratorFunc) -> hints.DecoratorReturnValue:
     """
     Decorator that catches :class:`~usb1.USBError` exceptions and re-raises them as
     specific exception types that derive from :class:`~adbts.exceptions.TransportError`.
     """
-
     @functools.wraps(func)
-    def decorator(*args, **kwargs):  # pylint: disable=missing-docstring
+    def decorator(*args: hints.Args, **kwargs: hints.Kwargs) -> hints.DecoratorReturnValue:
+        """
+        Catch and re-raise libusb related exceptions raised from the decorated function.
+        """
         try:
             return func(*args, **kwargs)
         except usb1.USBError as ex:
