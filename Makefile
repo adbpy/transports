@@ -60,7 +60,7 @@ seclint:  ## Run Python security linter 'bandit' on package.
 
 .PHONY: mypy
 mypy:  ## Run mypy static analysis checks on the package.
-	@mypy adbts
+	@mypy --strict adbts
 
 .PHONY: pydocstyle
 pydocstyle:  ## Run pydocstyle on the package
