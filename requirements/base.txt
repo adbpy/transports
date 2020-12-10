@@ -5,4 +5,4 @@
 -r build.txt
 
 typing==3.7.4.3; python_version < '3.6'
-libusb1==1.8
+libusb1==1.9.1
