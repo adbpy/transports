@@ -4,10 +4,10 @@
 
 -r dev.txt
 
-coverage==5.3.1
+coverage==5.5
 
-pytest==6.2.1
+pytest==6.2.3
 pytest-benchmark==3.4.1
-pytest-cov==2.10.1
-pytest-mock==3.5.0
+pytest-cov==2.11.1
+pytest-mock==3.5.1
 pytest-pep8==1.0.6
