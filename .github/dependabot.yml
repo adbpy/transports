@@ -1,0 +1,42 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 20
+  ignore:
+  - dependency-name: pylint
+    versions:
+    - 2.7.0
+    - 2.7.1
+    - 2.7.2
+    - 2.7.3
+    - 2.8.1
+  - dependency-name: setuptools
+    versions:
+    - 52.0.0
+    - 53.0.0
+    - 53.1.0
+    - 54.0.0
+    - 54.1.1
+    - 54.1.2
+    - 54.2.0
+  - dependency-name: sphinx
+    versions:
+    - 3.5.0
+    - 3.5.2
+    - 3.5.3
+  - dependency-name: tox
+    versions:
+    - 3.21.3
+    - 3.21.4
+  - dependency-name: coverage
+    versions:
+    - "5.4"
+  - dependency-name: pytest
+    versions:
+    - 6.2.2
+  - dependency-name: mypy
+    versions:
+    - "0.800"
