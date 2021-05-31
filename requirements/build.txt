@@ -2,5 +2,5 @@
 #
 # Requirements necessary to build the adbts package.
 
-pipenv==2020.11.15
+pipenv==2021.5.29
 setuptools==56.0.0
