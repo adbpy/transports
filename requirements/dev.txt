@@ -9,6 +9,6 @@ isort==5.7.0; (python_version == '3.5' or python_version == '3.6')  # pyup: igno
 isort==5.8.0; python_version > '3.6'
 mypy==0.812
 pydocstyle==6.0.0
-pylint==2.7.4
+pylint==2.9.0
 bandit==1.7.0
 safety==1.10.3
